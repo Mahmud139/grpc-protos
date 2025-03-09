@@ -1,0 +1,117 @@
+syntax = "proto3";
+
+package auth;
+
+option go_package = "/auth";
+
+// Authentication Service
+service AuthService {
+    // Register a new user (either Student or Teacher)
+    rpc RegisterUser(RegisterUserRequest) returns (RegisterUserResponse);
+
+    // Verify OTP for email confirmation
+    rpc VerifyEmail(VerifyEmailRequest) returns (VerifyEmailResponse);
+
+    // Login and receive JWT tokens
+    rpc Login(LoginRequest) returns (LoginResponse);
+
+    // Validate a JWT token
+    rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse);
+
+    // Refresh JWT token
+    rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse);
+}
+
+// Enum for User Type
+enum UserType {
+    UNKNOWN = 0;
+    TEACHER = 1;
+    STUDENT = 2;
+}
+
+// Teacher-specific fields
+message Teacher {
+    string name = 1;
+    string email = 2;
+    string institution = 3;
+    string major = 4;
+    string teacher_id = 5;
+    string country = 6;
+    string password = 7;
+}
+
+// Student-specific fields
+message Student {
+    string name = 1;
+    string email = 2;
+    string institution = 3;
+    string major = 4;
+    string student_id = 5;
+    string grade = 6;
+    string country = 7;
+    string password = 8;
+}
+
+// User Registration Request
+message RegisterUserRequest {
+    UserType user_type = 1; // Type of user (Teacher or Student)
+    oneof user {
+        Teacher teacher = 2; // Teacher details
+        Student student = 3; // Student details
+    }
+}
+
+// User Registration Response
+message RegisterUserResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+// OTP Verification Request
+message VerifyEmailRequest {
+    string email = 1;
+    string otp_code = 2;
+}
+
+// OTP Verification Response
+message VerifyEmailResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+// Login Request
+message LoginRequest {
+    string email = 1;
+    string password = 2;
+}
+
+// Login Response
+message LoginResponse {
+    bool success = 1;
+    string access_token = 2; // JWT Access Token
+    string refresh_token = 3; // JWT Refresh Token
+    string message = 4;
+}
+
+// Validate JWT Token Request
+message ValidateTokenRequest {
+    string token = 1;
+}
+
+// Validate JWT Token Response
+message ValidateTokenResponse {
+    bool is_valid = 1;
+    string user_id = 2;
+    UserType user_type = 3;
+}
+
+// Refresh JWT Token Request
+message RefreshTokenRequest {
+    string refresh_token = 1;
+}
+
+// Refresh JWT Token Response
+message RefreshTokenResponse {
+    bool success = 1;
+    string new_access_token = 2;
+}
