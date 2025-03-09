@@ -1,4 +1,4 @@
-module mahmud.pro/grpc_protos
+module github.com/Mahmud139/grpc-protos
 
 go 1.23.1
 
