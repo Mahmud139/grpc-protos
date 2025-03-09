@@ -4,7 +4,7 @@ package auth;
 
 option go_package = "/auth";
 
-// Authentication Service
+//Authentication Service
 service AuthService {
     // Register a new user (either Student or Teacher)
     rpc RegisterUser(RegisterUserRequest) returns (RegisterUserResponse);
