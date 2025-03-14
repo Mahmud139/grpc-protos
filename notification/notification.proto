@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+package notification;
+
+option go_package = "/notification";
+
+// NotificationService - Handles sending emails, SMS, and push notifications
+service NotificationService {
+    // Send a single notification (email, SMS, or push)
+    rpc SendNotification(SendNotificationRequest) returns (SendNotificationResponse);
+
+    // Send bulk notifications to multiple users
+    rpc SendBatchNotification(SendBatchNotificationRequest) returns (SendBatchNotificationResponse);
+
+    // Check the status of a previously sent notification
+    rpc GetNotificationStatus(GetNotificationStatusRequest) returns (GetNotificationStatusResponse);
+}
+
+// Types of notifications that can be sent
+enum NotificationType {
+    EMAIL = 0;
+    SMS = 1;
+    PUSH = 2;
+    OTP = 3; // New type for OTP notifications
+}
+
+// Common message format for sending notifications
+message Notification {
+    string recipient_id = 1;   // User ID of the recipient
+    string recipient_contact = 2; // Email, phone number, or device token
+    NotificationType type = 3; // Type of notification
+    string subject = 4;        // Subject (used for emails)
+    string message = 5;        // Message content
+    optional string otp_code = 6; // OTP code (only used when type = OTP)
+    map<string, string> metadata = 7; // Additional metadata (e.g., email headers, SMS provider ID)
+}
+
+// Request to send a single notification
+message SendNotificationRequest {
+    Notification notification = 1;
+}
+
+// Response for a single notification request
+message SendNotificationResponse {
+    string notification_id = 1; // Unique ID for tracking
+    string status = 2; // "SENT", "QUEUED", "FAILED"
+}
+
+// Request to send batch notifications
+message SendBatchNotificationRequest {
+    repeated Notification notifications = 1;
+}
+
+// Response for batch notifications
+message SendBatchNotificationResponse {
+    map<string, string> status_map = 1; // notification_id -> status
+}
+
+// Request to check notification status
+message GetNotificationStatusRequest {
+    string notification_id = 1;
+}
+
+// Response with notification status
+message GetNotificationStatusResponse {
+    string notification_id = 1;
+    string status = 2; // "SENT", "DELIVERED", "FAILED", "PENDING"
+    string error_message = 3; // Error details (if any)
+}
