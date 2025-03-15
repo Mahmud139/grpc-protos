@@ -19,11 +19,12 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AuthService_RegisterUser_FullMethodName  = "/auth.AuthService/RegisterUser"
-	AuthService_VerifyEmail_FullMethodName   = "/auth.AuthService/VerifyEmail"
-	AuthService_Login_FullMethodName         = "/auth.AuthService/Login"
-	AuthService_ValidateToken_FullMethodName = "/auth.AuthService/ValidateToken"
-	AuthService_RefreshToken_FullMethodName  = "/auth.AuthService/RefreshToken"
+	AuthService_RegisterUser_FullMethodName      = "/auth.AuthService/RegisterUser"
+	AuthService_VerifyEmailExists_FullMethodName = "/auth.AuthService/VerifyEmailExists"
+	AuthService_VerifyEmail_FullMethodName       = "/auth.AuthService/VerifyEmail"
+	AuthService_Login_FullMethodName             = "/auth.AuthService/Login"
+	AuthService_ValidateToken_FullMethodName     = "/auth.AuthService/ValidateToken"
+	AuthService_RefreshToken_FullMethodName      = "/auth.AuthService/RefreshToken"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -34,6 +35,8 @@ const (
 type AuthServiceClient interface {
 	// Register a new user (either Student or Teacher)
 	RegisterUser(ctx context.Context, in *RegisterUserRequest, opts ...grpc.CallOption) (*RegisterUserResponse, error)
+	// Verify whether the email exists
+	VerifyEmailExists(ctx context.Context, in *VerifyEmailExistsRequest, opts ...grpc.CallOption) (*VerifyEmailExistsResponse, error)
 	// Verify OTP for email confirmation
 	VerifyEmail(ctx context.Context, in *VerifyEmailRequest, opts ...grpc.CallOption) (*VerifyEmailResponse, error)
 	// Login and receive JWT tokens
@@ -56,6 +59,16 @@ func (c *authServiceClient) RegisterUser(ctx context.Context, in *RegisterUserRe
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(RegisterUserResponse)
 	err := c.cc.Invoke(ctx, AuthService_RegisterUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) VerifyEmailExists(ctx context.Context, in *VerifyEmailExistsRequest, opts ...grpc.CallOption) (*VerifyEmailExistsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(VerifyEmailExistsResponse)
+	err := c.cc.Invoke(ctx, AuthService_VerifyEmailExists_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -110,6 +123,8 @@ func (c *authServiceClient) RefreshToken(ctx context.Context, in *RefreshTokenRe
 type AuthServiceServer interface {
 	// Register a new user (either Student or Teacher)
 	RegisterUser(context.Context, *RegisterUserRequest) (*RegisterUserResponse, error)
+	// Verify whether the email exists
+	VerifyEmailExists(context.Context, *VerifyEmailExistsRequest) (*VerifyEmailExistsResponse, error)
 	// Verify OTP for email confirmation
 	VerifyEmail(context.Context, *VerifyEmailRequest) (*VerifyEmailResponse, error)
 	// Login and receive JWT tokens
@@ -130,6 +145,9 @@ type UnimplementedAuthServiceServer struct{}
 
 func (UnimplementedAuthServiceServer) RegisterUser(context.Context, *RegisterUserRequest) (*RegisterUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterUser not implemented")
+}
+func (UnimplementedAuthServiceServer) VerifyEmailExists(context.Context, *VerifyEmailExistsRequest) (*VerifyEmailExistsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyEmailExists not implemented")
 }
 func (UnimplementedAuthServiceServer) VerifyEmail(context.Context, *VerifyEmailRequest) (*VerifyEmailResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VerifyEmail not implemented")
@@ -178,6 +196,24 @@ func _AuthService_RegisterUser_Handler(srv interface{}, ctx context.Context, dec
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AuthServiceServer).RegisterUser(ctx, req.(*RegisterUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_VerifyEmailExists_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyEmailExistsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).VerifyEmailExists(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_VerifyEmailExists_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).VerifyEmailExists(ctx, req.(*VerifyEmailExistsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -264,6 +300,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RegisterUser",
 			Handler:    _AuthService_RegisterUser_Handler,
+		},
+		{
+			MethodName: "VerifyEmailExists",
+			Handler:    _AuthService_VerifyEmailExists_Handler,
 		},
 		{
 			MethodName: "VerifyEmail",

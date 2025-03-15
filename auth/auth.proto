@@ -9,6 +9,9 @@ service AuthService {
     // Register a new user (either Student or Teacher)
     rpc RegisterUser(RegisterUserRequest) returns (RegisterUserResponse);
 
+    // Verify whether the email exists
+    rpc VerifyEmailExists(VerifyEmailExistsRequest) returns (VerifyEmailExistsResponse);
+
     // Verify OTP for email confirmation
     rpc VerifyEmail(VerifyEmailRequest) returns (VerifyEmailResponse);
 
@@ -65,6 +68,16 @@ message RegisterUserRequest {
 message RegisterUserResponse {
     bool success = 1;
     string message = 2;
+}
+
+// Email Verification Request
+message VerifyEmailExistsRequest {
+    string email = 1;
+}
+
+// Email Verification Response
+message VerifyEmailExistsResponse {
+    bool exists = 1;
 }
 
 // OTP Verification Request
