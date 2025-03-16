@@ -12,6 +12,12 @@ service AuthService {
     // Verify whether the email exists
     rpc VerifyEmailExists(VerifyEmailExistsRequest) returns (VerifyEmailExistsResponse);
 
+    // Send OTP for email confirmation
+    rpc SendOTP(SendOTPRequest) returns (SendOTPResponse);
+
+    // Resend OTP for email confirmation
+    rpc ResendOTP(SendOTPRequest) returns (SendOTPResponse);
+
     // Verify OTP for email confirmation
     rpc VerifyEmail(VerifyEmailRequest) returns (VerifyEmailResponse);
 
@@ -80,10 +86,23 @@ message VerifyEmailExistsResponse {
     bool exists = 1;
 }
 
+// Send OTP Request
+message SendOTPRequest {
+    string uid = 1;
+    string email = 2;
+}
+
+// Send OTP Response
+message SendOTPResponse {
+    bool success = 1;
+    string message = 2;
+}
+
 // OTP Verification Request
 message VerifyEmailRequest {
-    string email = 1;
-    string otp_code = 2;
+    string uid = 1;
+    string email = 2;
+    string otp_code = 3;
 }
 
 // OTP Verification Response
