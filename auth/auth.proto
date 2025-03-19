@@ -24,9 +24,6 @@ service AuthService {
     // Login and receive JWT tokens
     rpc Login(LoginRequest) returns (LoginResponse);
 
-    // Validate a JWT token
-    rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse);
-
     // Refresh JWT token
     rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse);
 }
@@ -128,18 +125,6 @@ message LoginResponse {
     string message = 4;
 }
 
-// Validate JWT Token Request
-message ValidateTokenRequest {
-    string token = 1;
-}
-
-// Validate JWT Token Response
-message ValidateTokenResponse {
-    bool is_valid = 1;
-    string user_id = 2;
-    UserType user_type = 3;
-}
-
 // Refresh JWT Token Request
 message RefreshTokenRequest {
     string refresh_token = 1;
@@ -148,5 +133,6 @@ message RefreshTokenRequest {
 // Refresh JWT Token Response
 message RefreshTokenResponse {
     bool success = 1;
-    string new_access_token = 2;
+    string access_token = 2;
+    string refresh_token = 3;
 }
