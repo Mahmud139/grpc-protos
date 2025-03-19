@@ -127,7 +127,8 @@ message LoginResponse {
 
 // Refresh JWT Token Request
 message RefreshTokenRequest {
-    string refresh_token = 1;
+    string uid = 1;
+    string refresh_token = 2;
 }
 
 // Refresh JWT Token Response
