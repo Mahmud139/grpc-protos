@@ -26,6 +26,9 @@ service AuthService {
 
     // Refresh JWT token
     rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse);
+
+    // Forgot Password
+    rpc ForgotPassword(ForgotPasswordRequest) returns (ForgotPasswordResponse);
 }
 
 // Enum for User Type
@@ -136,4 +139,15 @@ message RefreshTokenResponse {
     bool success = 1;
     string access_token = 2;
     string refresh_token = 3;
+}
+
+// Forgot Password Request
+message ForgotPasswordRequest {
+    string email = 1;
+}
+
+// Forgot Password Response
+message ForgotPasswordResponse {
+    bool success = 1;
+    string message = 2;
 }
