@@ -29,6 +29,9 @@ service AuthService {
 
     // Forgot Password
     rpc ForgotPassword(ForgotPasswordRequest) returns (ForgotPasswordResponse);
+
+    // Check Reset Password Token
+    rpc VerifyResetPasswordToken(VerifyResetPasswordTokenRequest) returns (VerifyResetPasswordTokenResponse);
 }
 
 // Enum for User Type
@@ -150,4 +153,12 @@ message ForgotPasswordRequest {
 message ForgotPasswordResponse {
     bool success = 1;
     string message = 2;
+}
+
+message VerifyResetPasswordTokenRequest {
+    string token = 1;
+}
+
+message VerifyResetPasswordTokenResponse {
+    bool success = 1;
 }

@@ -19,14 +19,15 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AuthService_RegisterUser_FullMethodName      = "/auth.AuthService/RegisterUser"
-	AuthService_VerifyEmailExists_FullMethodName = "/auth.AuthService/VerifyEmailExists"
-	AuthService_SendOTP_FullMethodName           = "/auth.AuthService/SendOTP"
-	AuthService_ResendOTP_FullMethodName         = "/auth.AuthService/ResendOTP"
-	AuthService_VerifyEmail_FullMethodName       = "/auth.AuthService/VerifyEmail"
-	AuthService_Login_FullMethodName             = "/auth.AuthService/Login"
-	AuthService_RefreshToken_FullMethodName      = "/auth.AuthService/RefreshToken"
-	AuthService_ForgotPassword_FullMethodName    = "/auth.AuthService/ForgotPassword"
+	AuthService_RegisterUser_FullMethodName             = "/auth.AuthService/RegisterUser"
+	AuthService_VerifyEmailExists_FullMethodName        = "/auth.AuthService/VerifyEmailExists"
+	AuthService_SendOTP_FullMethodName                  = "/auth.AuthService/SendOTP"
+	AuthService_ResendOTP_FullMethodName                = "/auth.AuthService/ResendOTP"
+	AuthService_VerifyEmail_FullMethodName              = "/auth.AuthService/VerifyEmail"
+	AuthService_Login_FullMethodName                    = "/auth.AuthService/Login"
+	AuthService_RefreshToken_FullMethodName             = "/auth.AuthService/RefreshToken"
+	AuthService_ForgotPassword_FullMethodName           = "/auth.AuthService/ForgotPassword"
+	AuthService_VerifyResetPasswordToken_FullMethodName = "/auth.AuthService/VerifyResetPasswordToken"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -51,6 +52,8 @@ type AuthServiceClient interface {
 	RefreshToken(ctx context.Context, in *RefreshTokenRequest, opts ...grpc.CallOption) (*RefreshTokenResponse, error)
 	// Forgot Password
 	ForgotPassword(ctx context.Context, in *ForgotPasswordRequest, opts ...grpc.CallOption) (*ForgotPasswordResponse, error)
+	// Check Reset Password Token
+	VerifyResetPasswordToken(ctx context.Context, in *VerifyResetPasswordTokenRequest, opts ...grpc.CallOption) (*VerifyResetPasswordTokenResponse, error)
 }
 
 type authServiceClient struct {
@@ -141,6 +144,16 @@ func (c *authServiceClient) ForgotPassword(ctx context.Context, in *ForgotPasswo
 	return out, nil
 }
 
+func (c *authServiceClient) VerifyResetPasswordToken(ctx context.Context, in *VerifyResetPasswordTokenRequest, opts ...grpc.CallOption) (*VerifyResetPasswordTokenResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(VerifyResetPasswordTokenResponse)
+	err := c.cc.Invoke(ctx, AuthService_VerifyResetPasswordToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility.
@@ -163,6 +176,8 @@ type AuthServiceServer interface {
 	RefreshToken(context.Context, *RefreshTokenRequest) (*RefreshTokenResponse, error)
 	// Forgot Password
 	ForgotPassword(context.Context, *ForgotPasswordRequest) (*ForgotPasswordResponse, error)
+	// Check Reset Password Token
+	VerifyResetPasswordToken(context.Context, *VerifyResetPasswordTokenRequest) (*VerifyResetPasswordTokenResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -196,6 +211,9 @@ func (UnimplementedAuthServiceServer) RefreshToken(context.Context, *RefreshToke
 }
 func (UnimplementedAuthServiceServer) ForgotPassword(context.Context, *ForgotPasswordRequest) (*ForgotPasswordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ForgotPassword not implemented")
+}
+func (UnimplementedAuthServiceServer) VerifyResetPasswordToken(context.Context, *VerifyResetPasswordTokenRequest) (*VerifyResetPasswordTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyResetPasswordToken not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 func (UnimplementedAuthServiceServer) testEmbeddedByValue()                     {}
@@ -362,6 +380,24 @@ func _AuthService_ForgotPassword_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_VerifyResetPasswordToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyResetPasswordTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).VerifyResetPasswordToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_VerifyResetPasswordToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).VerifyResetPasswordToken(ctx, req.(*VerifyResetPasswordTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -400,6 +436,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ForgotPassword",
 			Handler:    _AuthService_ForgotPassword_Handler,
+		},
+		{
+			MethodName: "VerifyResetPasswordToken",
+			Handler:    _AuthService_VerifyResetPasswordToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
