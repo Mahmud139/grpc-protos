@@ -32,6 +32,9 @@ service AuthService {
 
     // Check Reset Password Token
     rpc VerifyResetPasswordToken(VerifyResetPasswordTokenRequest) returns (VerifyResetPasswordTokenResponse);
+
+    // Reset Password
+    rpc ResetPassword(ResetPasswordRequest) returns (ResetPasswordResponse);
 }
 
 // Enum for User Type
@@ -160,5 +163,16 @@ message VerifyResetPasswordTokenRequest {
 }
 
 message VerifyResetPasswordTokenResponse {
+    bool success = 1;
+}
+
+// Reset Password Request
+message ResetPasswordRequest {
+    string token = 1;
+    string new_password = 2;
+}
+
+// Reset Password Response
+message ResetPasswordResponse {
     bool success = 1;
 }
