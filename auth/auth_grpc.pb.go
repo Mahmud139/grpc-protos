@@ -19,16 +19,15 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AuthService_RegisterUser_FullMethodName             = "/auth.AuthService/RegisterUser"
-	AuthService_VerifyEmailExists_FullMethodName        = "/auth.AuthService/VerifyEmailExists"
-	AuthService_SendOTP_FullMethodName                  = "/auth.AuthService/SendOTP"
-	AuthService_ResendOTP_FullMethodName                = "/auth.AuthService/ResendOTP"
-	AuthService_VerifyEmail_FullMethodName              = "/auth.AuthService/VerifyEmail"
-	AuthService_Login_FullMethodName                    = "/auth.AuthService/Login"
-	AuthService_RefreshToken_FullMethodName             = "/auth.AuthService/RefreshToken"
-	AuthService_ForgotPassword_FullMethodName           = "/auth.AuthService/ForgotPassword"
-	AuthService_VerifyResetPasswordToken_FullMethodName = "/auth.AuthService/VerifyResetPasswordToken"
-	AuthService_ResetPassword_FullMethodName            = "/auth.AuthService/ResetPassword"
+	AuthService_RegisterUser_FullMethodName                 = "/auth.AuthService/RegisterUser"
+	AuthService_VerifyEmailExists_FullMethodName            = "/auth.AuthService/VerifyEmailExists"
+	AuthService_ResendEmailVerificationEmail_FullMethodName = "/auth.AuthService/ResendEmailVerificationEmail"
+	AuthService_VerifyEmail_FullMethodName                  = "/auth.AuthService/VerifyEmail"
+	AuthService_Login_FullMethodName                        = "/auth.AuthService/Login"
+	AuthService_RefreshToken_FullMethodName                 = "/auth.AuthService/RefreshToken"
+	AuthService_ForgotPassword_FullMethodName               = "/auth.AuthService/ForgotPassword"
+	AuthService_VerifyResetPasswordToken_FullMethodName     = "/auth.AuthService/VerifyResetPasswordToken"
+	AuthService_ResetPassword_FullMethodName                = "/auth.AuthService/ResetPassword"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -41,11 +40,9 @@ type AuthServiceClient interface {
 	RegisterUser(ctx context.Context, in *RegisterUserRequest, opts ...grpc.CallOption) (*RegisterUserResponse, error)
 	// Verify whether the email exists
 	VerifyEmailExists(ctx context.Context, in *VerifyEmailExistsRequest, opts ...grpc.CallOption) (*VerifyEmailExistsResponse, error)
-	// Send OTP for email confirmation
-	SendOTP(ctx context.Context, in *SendOTPRequest, opts ...grpc.CallOption) (*SendOTPResponse, error)
-	// Resend OTP for email confirmation
-	ResendOTP(ctx context.Context, in *SendOTPRequest, opts ...grpc.CallOption) (*SendOTPResponse, error)
-	// Verify OTP for email confirmation
+	// Resend Email Verificaiton Email
+	ResendEmailVerificationEmail(ctx context.Context, in *ResendEmailVerificationEmailRequest, opts ...grpc.CallOption) (*ResendEmailVerificationEmailResponse, error)
+	// Verify Token for email confirmation
 	VerifyEmail(ctx context.Context, in *VerifyEmailRequest, opts ...grpc.CallOption) (*VerifyEmailResponse, error)
 	// Login and receive JWT tokens
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
@@ -87,20 +84,10 @@ func (c *authServiceClient) VerifyEmailExists(ctx context.Context, in *VerifyEma
 	return out, nil
 }
 
-func (c *authServiceClient) SendOTP(ctx context.Context, in *SendOTPRequest, opts ...grpc.CallOption) (*SendOTPResponse, error) {
+func (c *authServiceClient) ResendEmailVerificationEmail(ctx context.Context, in *ResendEmailVerificationEmailRequest, opts ...grpc.CallOption) (*ResendEmailVerificationEmailResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(SendOTPResponse)
-	err := c.cc.Invoke(ctx, AuthService_SendOTP_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *authServiceClient) ResendOTP(ctx context.Context, in *SendOTPRequest, opts ...grpc.CallOption) (*SendOTPResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(SendOTPResponse)
-	err := c.cc.Invoke(ctx, AuthService_ResendOTP_FullMethodName, in, out, cOpts...)
+	out := new(ResendEmailVerificationEmailResponse)
+	err := c.cc.Invoke(ctx, AuthService_ResendEmailVerificationEmail_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -177,11 +164,9 @@ type AuthServiceServer interface {
 	RegisterUser(context.Context, *RegisterUserRequest) (*RegisterUserResponse, error)
 	// Verify whether the email exists
 	VerifyEmailExists(context.Context, *VerifyEmailExistsRequest) (*VerifyEmailExistsResponse, error)
-	// Send OTP for email confirmation
-	SendOTP(context.Context, *SendOTPRequest) (*SendOTPResponse, error)
-	// Resend OTP for email confirmation
-	ResendOTP(context.Context, *SendOTPRequest) (*SendOTPResponse, error)
-	// Verify OTP for email confirmation
+	// Resend Email Verificaiton Email
+	ResendEmailVerificationEmail(context.Context, *ResendEmailVerificationEmailRequest) (*ResendEmailVerificationEmailResponse, error)
+	// Verify Token for email confirmation
 	VerifyEmail(context.Context, *VerifyEmailRequest) (*VerifyEmailResponse, error)
 	// Login and receive JWT tokens
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
@@ -209,11 +194,8 @@ func (UnimplementedAuthServiceServer) RegisterUser(context.Context, *RegisterUse
 func (UnimplementedAuthServiceServer) VerifyEmailExists(context.Context, *VerifyEmailExistsRequest) (*VerifyEmailExistsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VerifyEmailExists not implemented")
 }
-func (UnimplementedAuthServiceServer) SendOTP(context.Context, *SendOTPRequest) (*SendOTPResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SendOTP not implemented")
-}
-func (UnimplementedAuthServiceServer) ResendOTP(context.Context, *SendOTPRequest) (*SendOTPResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ResendOTP not implemented")
+func (UnimplementedAuthServiceServer) ResendEmailVerificationEmail(context.Context, *ResendEmailVerificationEmailRequest) (*ResendEmailVerificationEmailResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ResendEmailVerificationEmail not implemented")
 }
 func (UnimplementedAuthServiceServer) VerifyEmail(context.Context, *VerifyEmailRequest) (*VerifyEmailResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VerifyEmail not implemented")
@@ -290,38 +272,20 @@ func _AuthService_VerifyEmailExists_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AuthService_SendOTP_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SendOTPRequest)
+func _AuthService_ResendEmailVerificationEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ResendEmailVerificationEmailRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthServiceServer).SendOTP(ctx, in)
+		return srv.(AuthServiceServer).ResendEmailVerificationEmail(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: AuthService_SendOTP_FullMethodName,
+		FullMethod: AuthService_ResendEmailVerificationEmail_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).SendOTP(ctx, req.(*SendOTPRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AuthService_ResendOTP_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SendOTPRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AuthServiceServer).ResendOTP(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AuthService_ResendOTP_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).ResendOTP(ctx, req.(*SendOTPRequest))
+		return srv.(AuthServiceServer).ResendEmailVerificationEmail(ctx, req.(*ResendEmailVerificationEmailRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -450,12 +414,8 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AuthService_VerifyEmailExists_Handler,
 		},
 		{
-			MethodName: "SendOTP",
-			Handler:    _AuthService_SendOTP_Handler,
-		},
-		{
-			MethodName: "ResendOTP",
-			Handler:    _AuthService_ResendOTP_Handler,
+			MethodName: "ResendEmailVerificationEmail",
+			Handler:    _AuthService_ResendEmailVerificationEmail_Handler,
 		},
 		{
 			MethodName: "VerifyEmail",

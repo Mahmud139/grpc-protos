@@ -12,13 +12,10 @@ service AuthService {
     // Verify whether the email exists
     rpc VerifyEmailExists(VerifyEmailExistsRequest) returns (VerifyEmailExistsResponse);
 
-    // Send OTP for email confirmation
-    rpc SendOTP(SendOTPRequest) returns (SendOTPResponse);
+    // Resend Email Verificaiton Email
+    rpc ResendEmailVerificationEmail(ResendEmailVerificationEmailRequest) returns (ResendEmailVerificationEmailResponse);
 
-    // Resend OTP for email confirmation
-    rpc ResendOTP(SendOTPRequest) returns (SendOTPResponse);
-
-    // Verify OTP for email confirmation
+    // Verify Token for email confirmation
     rpc VerifyEmail(VerifyEmailRequest) returns (VerifyEmailResponse);
 
     // Login and receive JWT tokens
@@ -74,6 +71,9 @@ message RegisterUserRequest {
         Teacher teacher = 2; // Teacher details
         Student student = 3; // Student details
     }
+    string ip_address = 4;
+    string user_agent = 5;
+    string geo_location = 6;
 }
 
 // User Registration Response
@@ -93,22 +93,22 @@ message VerifyEmailExistsResponse {
 }
 
 // Send OTP Request
-message SendOTPRequest {
-    string uid = 1;
-    string email = 2;
+message ResendEmailVerificationEmailRequest {
+    string token = 1;
+    string ip_address = 2;
+    string user_agent = 3;
+    string geo_location = 4;
 }
 
 // Send OTP Response
-message SendOTPResponse {
+message ResendEmailVerificationEmailResponse {
     bool success = 1;
     string message = 2;
 }
 
 // OTP Verification Request
 message VerifyEmailRequest {
-    string uid = 1;
-    string email = 2;
-    string otp_code = 3;
+    string token = 1;
 }
 
 // OTP Verification Response
