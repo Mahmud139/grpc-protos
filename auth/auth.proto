@@ -79,7 +79,7 @@ message RegisterUserRequest {
 // User Registration Response
 message RegisterUserResponse {
     bool success = 1;
-    string message = 2;
+    string uid = 2;
 }
 
 // Email Verification Request

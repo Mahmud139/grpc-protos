@@ -6,64 +6,92 @@ option go_package = "/notification";
 
 // NotificationService - Handles sending emails, SMS, and push notifications
 service NotificationService {
+    // Send Email verification link with token
+    rpc SendEmailVerificationEmail(SendEmailVerificationRequest) returns (SendEmailVerificationResponse);
+
+    // Send Reset Password link with token
+    rpc SendResetPasswordEmail(SendResetPasswordEmailRequest) returns (SendResetPasswordEmailResponse);
+
     // Send a single notification (email, SMS, or push)
-    rpc SendNotification(SendNotificationRequest) returns (SendNotificationResponse);
+    // rpc SendNotification(SendNotificationRequest) returns (SendNotificationResponse);
 
     // Send bulk notifications to multiple users
-    rpc SendBatchNotification(SendBatchNotificationRequest) returns (SendBatchNotificationResponse);
+    // rpc SendBatchNotification(SendBatchNotificationRequest) returns (SendBatchNotificationResponse);
 
     // Check the status of a previously sent notification
-    rpc GetNotificationStatus(GetNotificationStatusRequest) returns (GetNotificationStatusResponse);
+    // rpc GetNotificationStatus(GetNotificationStatusRequest) returns (GetNotificationStatusResponse);
+}
+
+message SendEmailVerificationRequest {
+    string name = 1; // Name of the recipient
+    string recipient_email = 2; // Email address of the recipient
+    string token = 3; // Token for email verification
+}
+
+message SendEmailVerificationResponse {
+    string status = 1; // "SENT" OR "FAILED"
+    string message = 2; // Additional message (e.g. error details)
+}
+
+message SendResetPasswordEmailRequest {
+    string name = 1; // Name of the recipient
+    string recipient_email = 2; // Email address of the recipient
+    string token = 3; // Token for reset password
+}
+
+message SendResetPasswordEmailResponse {
+    string status = 1; // "SENT" OR "FAILED"
+    string message = 2; // Additional message (e.g. error details)
 }
 
 // Types of notifications that can be sent
-enum NotificationType {
-    EMAIL = 0;
-    SMS = 1;
-    PUSH = 2;
-    OTP = 3; // New type for OTP notifications
-}
+// enum NotificationType {
+//     EMAIL = 0;
+//     SMS = 1;
+//     PUSH = 2;
+//     OTP = 3; // New type for OTP notifications
+// }
 
 // Common message format for sending notifications
-message Notification {
-    string recipient_id = 1;   // User ID of the recipient
-    string recipient_contact = 2; // Email, phone number, or device token
-    NotificationType type = 3; // Type of notification
-    string subject = 4;        // Subject (used for emails)
-    string message = 5;        // Message content
-    optional string otp_code = 6; // OTP code (only used when type = OTP)
-    map<string, string> metadata = 7; // Additional metadata (e.g., email headers, SMS provider ID)
-}
+// message Notification {
+//     string recipient_uid = 1;   // User ID of the recipient
+//     string recipient_contact = 2; // Email, phone number, or device token
+//     NotificationType type = 3; // Type of notification
+//     string subject = 4;        // Subject (used for emails)
+//     string message = 5;        // Message content
+//     string token = 6; // for both OTP and Token-based notifications
+//     map<string, string> metadata = 7; // Additional metadata (e.g., email headers, SMS provider ID)
+// }
 
 // Request to send a single notification
-message SendNotificationRequest {
-    Notification notification = 1;
-}
+// message SendNotificationRequest {
+//     Notification notification = 1;
+// }
 
 // Response for a single notification request
-message SendNotificationResponse {
-    string notification_id = 1; // Unique ID for tracking
-    string status = 2; // "SENT", "QUEUED", "FAILED"
-}
+// message SendNotificationResponse {
+//     string notification_id = 1; // Unique ID for tracking
+//     string status = 2; // "SENT", "QUEUED", "FAILED"
+// }
 
 // Request to send batch notifications
-message SendBatchNotificationRequest {
-    repeated Notification notifications = 1;
-}
+// message SendBatchNotificationRequest {
+//     repeated Notification notifications = 1;
+// }
 
 // Response for batch notifications
-message SendBatchNotificationResponse {
-    map<string, string> status_map = 1; // notification_id -> status
-}
+// message SendBatchNotificationResponse {
+//     map<string, string> status_map = 1; // notification_id -> status
+// }
 
 // Request to check notification status
-message GetNotificationStatusRequest {
-    string notification_id = 1;
-}
+// message GetNotificationStatusRequest {
+//     string notification_id = 1;
+// }
 
 // Response with notification status
-message GetNotificationStatusResponse {
-    string notification_id = 1;
-    string status = 2; // "SENT", "DELIVERED", "FAILED", "PENDING"
-    string error_message = 3; // Error details (if any)
-}
+// message GetNotificationStatusResponse {
+//     string notification_id = 1;
+//     string status = 2; // "SENT", "DELIVERED", "FAILED", "PENDING"
+//     string error_message = 3; // Error details (if any)
+// }

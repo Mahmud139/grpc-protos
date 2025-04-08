@@ -19,9 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	NotificationService_SendNotification_FullMethodName      = "/notification.NotificationService/SendNotification"
-	NotificationService_SendBatchNotification_FullMethodName = "/notification.NotificationService/SendBatchNotification"
-	NotificationService_GetNotificationStatus_FullMethodName = "/notification.NotificationService/GetNotificationStatus"
+	NotificationService_SendEmailVerificationEmail_FullMethodName = "/notification.NotificationService/SendEmailVerificationEmail"
+	NotificationService_SendResetPasswordEmail_FullMethodName     = "/notification.NotificationService/SendResetPasswordEmail"
 )
 
 // NotificationServiceClient is the client API for NotificationService service.
@@ -30,12 +29,10 @@ const (
 //
 // NotificationService - Handles sending emails, SMS, and push notifications
 type NotificationServiceClient interface {
-	// Send a single notification (email, SMS, or push)
-	SendNotification(ctx context.Context, in *SendNotificationRequest, opts ...grpc.CallOption) (*SendNotificationResponse, error)
-	// Send bulk notifications to multiple users
-	SendBatchNotification(ctx context.Context, in *SendBatchNotificationRequest, opts ...grpc.CallOption) (*SendBatchNotificationResponse, error)
-	// Check the status of a previously sent notification
-	GetNotificationStatus(ctx context.Context, in *GetNotificationStatusRequest, opts ...grpc.CallOption) (*GetNotificationStatusResponse, error)
+	// Send Email verification link with token
+	SendEmailVerificationEmail(ctx context.Context, in *SendEmailVerificationRequest, opts ...grpc.CallOption) (*SendEmailVerificationResponse, error)
+	// Send Reset Password link with token
+	SendResetPasswordEmail(ctx context.Context, in *SendResetPasswordEmailRequest, opts ...grpc.CallOption) (*SendResetPasswordEmailResponse, error)
 }
 
 type notificationServiceClient struct {
@@ -46,30 +43,20 @@ func NewNotificationServiceClient(cc grpc.ClientConnInterface) NotificationServi
 	return &notificationServiceClient{cc}
 }
 
-func (c *notificationServiceClient) SendNotification(ctx context.Context, in *SendNotificationRequest, opts ...grpc.CallOption) (*SendNotificationResponse, error) {
+func (c *notificationServiceClient) SendEmailVerificationEmail(ctx context.Context, in *SendEmailVerificationRequest, opts ...grpc.CallOption) (*SendEmailVerificationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(SendNotificationResponse)
-	err := c.cc.Invoke(ctx, NotificationService_SendNotification_FullMethodName, in, out, cOpts...)
+	out := new(SendEmailVerificationResponse)
+	err := c.cc.Invoke(ctx, NotificationService_SendEmailVerificationEmail_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *notificationServiceClient) SendBatchNotification(ctx context.Context, in *SendBatchNotificationRequest, opts ...grpc.CallOption) (*SendBatchNotificationResponse, error) {
+func (c *notificationServiceClient) SendResetPasswordEmail(ctx context.Context, in *SendResetPasswordEmailRequest, opts ...grpc.CallOption) (*SendResetPasswordEmailResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(SendBatchNotificationResponse)
-	err := c.cc.Invoke(ctx, NotificationService_SendBatchNotification_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *notificationServiceClient) GetNotificationStatus(ctx context.Context, in *GetNotificationStatusRequest, opts ...grpc.CallOption) (*GetNotificationStatusResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetNotificationStatusResponse)
-	err := c.cc.Invoke(ctx, NotificationService_GetNotificationStatus_FullMethodName, in, out, cOpts...)
+	out := new(SendResetPasswordEmailResponse)
+	err := c.cc.Invoke(ctx, NotificationService_SendResetPasswordEmail_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -82,12 +69,10 @@ func (c *notificationServiceClient) GetNotificationStatus(ctx context.Context, i
 //
 // NotificationService - Handles sending emails, SMS, and push notifications
 type NotificationServiceServer interface {
-	// Send a single notification (email, SMS, or push)
-	SendNotification(context.Context, *SendNotificationRequest) (*SendNotificationResponse, error)
-	// Send bulk notifications to multiple users
-	SendBatchNotification(context.Context, *SendBatchNotificationRequest) (*SendBatchNotificationResponse, error)
-	// Check the status of a previously sent notification
-	GetNotificationStatus(context.Context, *GetNotificationStatusRequest) (*GetNotificationStatusResponse, error)
+	// Send Email verification link with token
+	SendEmailVerificationEmail(context.Context, *SendEmailVerificationRequest) (*SendEmailVerificationResponse, error)
+	// Send Reset Password link with token
+	SendResetPasswordEmail(context.Context, *SendResetPasswordEmailRequest) (*SendResetPasswordEmailResponse, error)
 	mustEmbedUnimplementedNotificationServiceServer()
 }
 
@@ -98,14 +83,11 @@ type NotificationServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedNotificationServiceServer struct{}
 
-func (UnimplementedNotificationServiceServer) SendNotification(context.Context, *SendNotificationRequest) (*SendNotificationResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SendNotification not implemented")
+func (UnimplementedNotificationServiceServer) SendEmailVerificationEmail(context.Context, *SendEmailVerificationRequest) (*SendEmailVerificationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendEmailVerificationEmail not implemented")
 }
-func (UnimplementedNotificationServiceServer) SendBatchNotification(context.Context, *SendBatchNotificationRequest) (*SendBatchNotificationResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SendBatchNotification not implemented")
-}
-func (UnimplementedNotificationServiceServer) GetNotificationStatus(context.Context, *GetNotificationStatusRequest) (*GetNotificationStatusResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetNotificationStatus not implemented")
+func (UnimplementedNotificationServiceServer) SendResetPasswordEmail(context.Context, *SendResetPasswordEmailRequest) (*SendResetPasswordEmailResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendResetPasswordEmail not implemented")
 }
 func (UnimplementedNotificationServiceServer) mustEmbedUnimplementedNotificationServiceServer() {}
 func (UnimplementedNotificationServiceServer) testEmbeddedByValue()                             {}
@@ -128,56 +110,38 @@ func RegisterNotificationServiceServer(s grpc.ServiceRegistrar, srv Notification
 	s.RegisterService(&NotificationService_ServiceDesc, srv)
 }
 
-func _NotificationService_SendNotification_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SendNotificationRequest)
+func _NotificationService_SendEmailVerificationEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SendEmailVerificationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(NotificationServiceServer).SendNotification(ctx, in)
+		return srv.(NotificationServiceServer).SendEmailVerificationEmail(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: NotificationService_SendNotification_FullMethodName,
+		FullMethod: NotificationService_SendEmailVerificationEmail_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NotificationServiceServer).SendNotification(ctx, req.(*SendNotificationRequest))
+		return srv.(NotificationServiceServer).SendEmailVerificationEmail(ctx, req.(*SendEmailVerificationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _NotificationService_SendBatchNotification_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SendBatchNotificationRequest)
+func _NotificationService_SendResetPasswordEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SendResetPasswordEmailRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(NotificationServiceServer).SendBatchNotification(ctx, in)
+		return srv.(NotificationServiceServer).SendResetPasswordEmail(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: NotificationService_SendBatchNotification_FullMethodName,
+		FullMethod: NotificationService_SendResetPasswordEmail_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NotificationServiceServer).SendBatchNotification(ctx, req.(*SendBatchNotificationRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _NotificationService_GetNotificationStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetNotificationStatusRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(NotificationServiceServer).GetNotificationStatus(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: NotificationService_GetNotificationStatus_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NotificationServiceServer).GetNotificationStatus(ctx, req.(*GetNotificationStatusRequest))
+		return srv.(NotificationServiceServer).SendResetPasswordEmail(ctx, req.(*SendResetPasswordEmailRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -190,16 +154,12 @@ var NotificationService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*NotificationServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "SendNotification",
-			Handler:    _NotificationService_SendNotification_Handler,
+			MethodName: "SendEmailVerificationEmail",
+			Handler:    _NotificationService_SendEmailVerificationEmail_Handler,
 		},
 		{
-			MethodName: "SendBatchNotification",
-			Handler:    _NotificationService_SendBatchNotification_Handler,
-		},
-		{
-			MethodName: "GetNotificationStatus",
-			Handler:    _NotificationService_GetNotificationStatus_Handler,
+			MethodName: "SendResetPasswordEmail",
+			Handler:    _NotificationService_SendResetPasswordEmail_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
