@@ -79,7 +79,7 @@ message RegisterUserRequest {
 // User Registration Response
 message RegisterUserResponse {
     bool success = 1;
-    string uid = 2;
+    string message = 2;
 }
 
 // Email Verification Request
@@ -150,6 +150,9 @@ message RefreshTokenResponse {
 // Forgot Password Request
 message ForgotPasswordRequest {
     string email = 1;
+    string ip_address = 2;
+    string user_agent = 3;
+    string geo_location = 4;
 }
 
 // Forgot Password Response
