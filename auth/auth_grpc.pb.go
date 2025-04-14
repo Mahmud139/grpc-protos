@@ -28,6 +28,7 @@ const (
 	AuthService_ForgotPassword_FullMethodName               = "/auth.AuthService/ForgotPassword"
 	AuthService_VerifyResetPasswordToken_FullMethodName     = "/auth.AuthService/VerifyResetPasswordToken"
 	AuthService_ResetPassword_FullMethodName                = "/auth.AuthService/ResetPassword"
+	AuthService_DeleteRefreshToken_FullMethodName           = "/auth.AuthService/DeleteRefreshToken"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -54,6 +55,8 @@ type AuthServiceClient interface {
 	VerifyResetPasswordToken(ctx context.Context, in *VerifyResetPasswordTokenRequest, opts ...grpc.CallOption) (*VerifyResetPasswordTokenResponse, error)
 	// Reset Password
 	ResetPassword(ctx context.Context, in *ResetPasswordRequest, opts ...grpc.CallOption) (*ResetPasswordResponse, error)
+	// delete refresh token
+	DeleteRefreshToken(ctx context.Context, in *DeleteRefreshTokenRequest, opts ...grpc.CallOption) (*DeleteRefreshTokenResponse, error)
 }
 
 type authServiceClient struct {
@@ -154,6 +157,16 @@ func (c *authServiceClient) ResetPassword(ctx context.Context, in *ResetPassword
 	return out, nil
 }
 
+func (c *authServiceClient) DeleteRefreshToken(ctx context.Context, in *DeleteRefreshTokenRequest, opts ...grpc.CallOption) (*DeleteRefreshTokenResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteRefreshTokenResponse)
+	err := c.cc.Invoke(ctx, AuthService_DeleteRefreshToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility.
@@ -178,6 +191,8 @@ type AuthServiceServer interface {
 	VerifyResetPasswordToken(context.Context, *VerifyResetPasswordTokenRequest) (*VerifyResetPasswordTokenResponse, error)
 	// Reset Password
 	ResetPassword(context.Context, *ResetPasswordRequest) (*ResetPasswordResponse, error)
+	// delete refresh token
+	DeleteRefreshToken(context.Context, *DeleteRefreshTokenRequest) (*DeleteRefreshTokenResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -214,6 +229,9 @@ func (UnimplementedAuthServiceServer) VerifyResetPasswordToken(context.Context, 
 }
 func (UnimplementedAuthServiceServer) ResetPassword(context.Context, *ResetPasswordRequest) (*ResetPasswordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ResetPassword not implemented")
+}
+func (UnimplementedAuthServiceServer) DeleteRefreshToken(context.Context, *DeleteRefreshTokenRequest) (*DeleteRefreshTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteRefreshToken not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 func (UnimplementedAuthServiceServer) testEmbeddedByValue()                     {}
@@ -398,6 +416,24 @@ func _AuthService_ResetPassword_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_DeleteRefreshToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteRefreshTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).DeleteRefreshToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_DeleteRefreshToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).DeleteRefreshToken(ctx, req.(*DeleteRefreshTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -440,6 +476,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ResetPassword",
 			Handler:    _AuthService_ResetPassword_Handler,
+		},
+		{
+			MethodName: "DeleteRefreshToken",
+			Handler:    _AuthService_DeleteRefreshToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

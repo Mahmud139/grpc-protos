@@ -32,6 +32,9 @@ service AuthService {
 
     // Reset Password
     rpc ResetPassword(ResetPasswordRequest) returns (ResetPasswordResponse);
+
+    // delete refresh token
+    rpc DeleteRefreshToken(DeleteRefreshTokenRequest) returns (DeleteRefreshTokenResponse);
 }
 
 // Enum for User Type
@@ -138,6 +141,9 @@ message LoginResponse {
 message RefreshTokenRequest {
     string uid = 1;
     string refresh_token = 2;
+    string ip_address = 3;
+    string user_agent = 4;
+    string geo_location = 5;
 }
 
 // Refresh JWT Token Response
@@ -145,6 +151,14 @@ message RefreshTokenResponse {
     bool success = 1;
     string access_token = 2;
     string refresh_token = 3;
+}
+
+message DeleteRefreshTokenRequest {
+    string refresh_token =1;
+}
+
+message DeleteRefreshTokenResponse {
+    bool success = 1;
 }
 
 // Forgot Password Request
