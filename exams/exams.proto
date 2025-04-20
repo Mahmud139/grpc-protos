@@ -1,0 +1,103 @@
+syntax = "proto3";
+
+package exams;
+
+option go_package = "/exams";
+
+// ENUMS
+enum AssignmentStatus {
+  ASSIGNMENT_STATUS_UNSPECIFIED = 0;
+  ASSIGNED = 1;
+  IN_PROGRESS = 2;
+  SUBMITTED = 3;
+  GRADED = 4;
+}
+
+// MESSAGES
+message Exam {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  repeated string question_bank_ids = 4;
+  string start_time = 5;
+  string end_time = 6;
+  int32 duration_minutes = 7;
+  bool allow_late_submission = 8;
+  string created_by = 9;
+  string created_at = 10;
+}
+
+message ExamAssignment {
+  string exam_id = 1;
+  string student_id = 2;
+  AssignmentStatus status = 3;
+  string submitted_at = 4;
+  string graded_at = 5;
+}
+
+message ExamQuestion {
+  string id = 1;
+  string exam_id = 2;
+  string question_id = 3; // from question_bank
+}
+
+// Used in answer submission
+message StudentAnswer {
+  string id = 1;
+  string exam_id = 2;
+  string exam_question_id = 3;
+  string student_id = 4;
+  repeated string selected_option_ids = 5;
+  repeated string blank_answers = 6;
+  string text_answer = 7;
+  bool is_marked = 8;
+  bool is_correct = 9;
+  int32 score = 10;
+  string marked_at = 11;
+}
+
+// REQUESTS / RESPONSES
+message CreateExamRequest {
+  Exam exam = 1;
+}
+
+message CreateExamResponse {
+  string id = 1;
+}
+
+message AssignStudentsRequest {
+  string exam_id = 1;
+  repeated string student_ids = 2;
+}
+
+message SubmitAnswerRequest {
+  StudentAnswer answer = 1;
+}
+
+message SubmitAnswerResponse {}
+
+message GetExamAssignmentsRequest {
+  string exam_id = 1;
+}
+
+message GetExamAssignmentsResponse {
+  repeated ExamAssignment assignments = 1;
+}
+
+message GetStudentAnswersRequest {
+  string exam_id = 1;
+  string student_id = 2;
+}
+
+message GetStudentAnswersResponse {
+  repeated StudentAnswer answers = 1;
+}
+
+// SERVICE
+service ExamManagementService {
+  rpc CreateExam(CreateExamRequest) returns (CreateExamResponse);
+//   rpc AssignStudents(AssignStudentsRequest) returns (google.protobuf.Empty);
+  rpc SubmitAnswer(SubmitAnswerRequest) returns (SubmitAnswerResponse);
+  rpc GetExamAssignments(GetExamAssignmentsRequest) returns (GetExamAssignmentsResponse);
+  rpc GetStudentAnswers(GetStudentAnswersRequest) returns (GetStudentAnswersResponse);
+}

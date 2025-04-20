@@ -1,0 +1,159 @@
+syntax = "proto3";
+
+package questionbanks;
+
+option go_package = "/question_banks";
+
+// ENUMS
+enum QuestionType {
+  QUESTION_TYPE_UNSPECIFIED = 0;
+  MCQ = 1;
+  TRUE_FALSE = 2;
+  CHECKBOX = 3;
+  FILL_IN_THE_BLANKS = 4;
+  SHORT_LONG_ANSWER = 5;
+}
+
+enum Difficulty {
+  DIFFICULTY_UNSPECIFIED = 0;
+  EASY = 1;
+  MEDIUM = 2;
+  HARD = 3;
+}
+
+// MESSAGES
+message QuestionOption {
+  string id = 1;
+  string question_id = 2;
+  string text = 3;
+  bool is_correct = 4;
+}
+
+message Blank {
+  string id = 1;
+  string question_id = 2;
+  string answer = 3;
+  int32 placeholder_order = 4;
+}
+
+message Question {
+  string id = 1;
+  string question_bank_id = 2;
+  QuestionType type = 3;
+  string question_content = 4;
+  repeated QuestionOption options = 5;
+  repeated Blank blanks = 6;
+  bool has_word_limit = 7;
+  int32 word_limit = 8;
+  int32 score = 9;
+  string image_url = 10;
+  Difficulty difficulty = 11;
+  string explanation = 12;
+  string created_at = 13;
+  string updated_at = 14;
+  string created_by = 15; // The teacher's id who created the question
+}
+
+// REQUESTS / RESPONSES
+message CreateQuestionRequest {
+  string question_bank_id = 1;
+  Question question = 2;
+}
+
+message CreateQuestionResponse {
+  Question question = 1;
+}
+
+message GetQuestionsRequest {
+  string question_bank_id = 1;
+  string created_by = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+}
+
+message GetQuestionsResponse {
+  string question_bank_name = 1;
+  repeated Question questions = 2;
+}
+
+message DeleteQuestionRequest {
+  string question_id = 1;
+  string question_bank_id = 2;
+  string created_by = 3;
+}
+
+message DeleteQuestionResponse {
+  bool success = 1;
+}
+
+message UpdateQuestionRequest {
+  Question question = 1;
+  string question_bank_id = 2;
+  string created_by = 3;
+}
+
+message UpdateQuestionResponse {
+  bool success = 1;
+}
+
+message QuestionBank {
+  string id = 1;
+  string name = 2;
+  string owner_id = 3; // The teacher who created this question bank
+  int32 total_questions = 4;
+  string created_at = 5;
+  string updated_at = 6;
+}
+
+message CreateQuestionBankRequest {
+  string name = 1;
+  string owner_id = 2; // The teacher who created this question bank
+}
+
+message CreateQuestionBankResponse {
+  string id = 1;
+//   string name =2;
+}
+
+message GetAllQuestionBanksRequest {
+  string owner_id = 1;
+  int32 page = 2;
+  int32 page_size = 3;
+}
+
+message GetAllQuestionBanksResponse {
+  repeated QuestionBank question_banks = 1;
+}
+
+message UpdateQuestionBankNameRequest{
+  string id = 1;
+  string new_name = 2;
+  string owner_id = 3;
+}
+
+message UpdateQuestionBankNameResponse {
+  bool success = 1;
+}
+
+message DeleteQuestionBankRequest {
+  string id = 1;
+  string owner_id = 2;
+}
+
+message DeleteQuestionBankResponse {
+  bool success = 1;
+}
+
+
+// SERVICE
+service QuestionBankService {
+  rpc CreateQuestionBank(CreateQuestionBankRequest) returns (CreateQuestionBankResponse);
+  rpc GetAllQuestionBanks(GetAllQuestionBanksRequest) returns (GetAllQuestionBanksResponse);
+  rpc DeleteQuestionBank(DeleteQuestionBankRequest) returns (DeleteQuestionBankResponse);
+  rpc UpdateQuestionBankName(UpdateQuestionBankNameRequest) returns (UpdateQuestionBankNameResponse);
+
+  rpc CreateQuestion(CreateQuestionRequest) returns (CreateQuestionResponse);
+  rpc GetQuestions(GetQuestionsRequest) returns (GetQuestionsResponse);
+  rpc UpdateQuestion(UpdateQuestionRequest) returns (UpdateQuestionResponse);
+  rpc DeleteQuestion(DeleteQuestionRequest) returns (DeleteQuestionResponse);
+}
