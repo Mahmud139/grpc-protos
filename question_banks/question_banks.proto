@@ -41,17 +41,18 @@ message Question {
   string question_bank_id = 2;
   QuestionType type = 3;
   string question_content = 4;
-  repeated QuestionOption options = 5;
-  repeated Blank blanks = 6;
-  bool has_word_limit = 7;
-  int32 word_limit = 8;
-  int32 score = 9;
-  string image_url = 10;
-  Difficulty difficulty = 11;
-  string explanation = 12;
-  string created_at = 13;
-  string updated_at = 14;
-  string created_by = 15; // The teacher's id who created the question
+  bool correct_answer = 5;
+  repeated QuestionOption options = 6;
+  repeated Blank blanks = 7;
+  bool has_word_limit = 8;
+  int32 word_limit = 9;
+  int32 score = 10;
+  string image_url = 11;
+  Difficulty difficulty = 12;
+  string explanation = 13;
+  string created_at = 14;
+  string updated_at = 15;
+  string created_by = 16; // The teacher's id who created the question
 }
 
 // REQUESTS / RESPONSES
@@ -67,8 +68,6 @@ message CreateQuestionResponse {
 message GetQuestionsRequest {
   string question_bank_id = 1;
   string created_by = 2;
-  int32 page = 3;
-  int32 page_size = 4;
 }
 
 message GetQuestionsResponse {
@@ -112,7 +111,6 @@ message CreateQuestionBankRequest {
 
 message CreateQuestionBankResponse {
   string id = 1;
-//   string name =2;
 }
 
 message GetAllQuestionBanksRequest {
