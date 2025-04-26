@@ -46,7 +46,7 @@ message Question {
   repeated Blank blanks = 7;
   bool has_word_limit = 8;
   int32 word_limit = 9;
-  string score = 10;
+  int32 score = 10;
   string image_url = 11;
   Difficulty difficulty = 12;
   string explanation = 13;

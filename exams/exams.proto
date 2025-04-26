@@ -1,103 +1,329 @@
+// syntax = "proto3";
+
+// package exams;
+
+// option go_package = "/exams";
+
+// // ENUMS
+// enum AssignmentStatus {
+//   ASSIGNMENT_STATUS_UNSPECIFIED = 0;
+//   ASSIGNED = 1;
+//   IN_PROGRESS = 2;
+//   SUBMITTED = 3;
+//   GRADED = 4;
+// }
+
+// // MESSAGES
+// message Exam {
+//   string id = 1;
+//   string title = 2;
+//   string description = 3;
+//   repeated string question_bank_ids = 4;
+//   string start_time = 5;
+//   string end_time = 6;
+//   int32 duration_minutes = 7;
+//   bool allow_late_submission = 8;
+//   string created_by = 9;
+//   string created_at = 10;
+// }
+
+// message ExamAssignment {
+//   string exam_id = 1;
+//   string student_id = 2;
+//   AssignmentStatus status = 3;
+//   string submitted_at = 4;
+//   string graded_at = 5;
+// }
+
+// message ExamQuestion {
+//   string id = 1;
+//   string exam_id = 2;
+//   string question_id = 3; // from question_bank
+// }
+
+// // Used in answer submission
+// message StudentAnswer {
+//   string id = 1;
+//   string exam_id = 2;
+//   string exam_question_id = 3;
+//   string student_id = 4;
+//   repeated string selected_option_ids = 5;
+//   repeated string blank_answers = 6;
+//   string text_answer = 7;
+//   bool is_marked = 8;
+//   bool is_correct = 9;
+//   int32 score = 10;
+//   string marked_at = 11;
+// }
+
+// // REQUESTS / RESPONSES
+// message CreateExamRequest {
+//   Exam exam = 1;
+// }
+
+// message CreateExamResponse {
+//   string id = 1;
+// }
+
+// message AssignStudentsRequest {
+//   string exam_id = 1;
+//   repeated string student_ids = 2;
+// }
+
+// message SubmitAnswerRequest {
+//   StudentAnswer answer = 1;
+// }
+
+// message SubmitAnswerResponse {}
+
+// message GetExamAssignmentsRequest {
+//   string exam_id = 1;
+// }
+
+// message GetExamAssignmentsResponse {
+//   repeated ExamAssignment assignments = 1;
+// }
+
+// message GetStudentAnswersRequest {
+//   string exam_id = 1;
+//   string student_id = 2;
+// }
+
+// message GetStudentAnswersResponse {
+//   repeated StudentAnswer answers = 1;
+// }
+
+// // SERVICE
+// service ExamManagementService {
+//   rpc CreateExam(CreateExamRequest) returns (CreateExamResponse);
+// //   rpc AssignStudents(AssignStudentsRequest) returns (google.protobuf.Empty);
+//   rpc SubmitAnswer(SubmitAnswerRequest) returns (SubmitAnswerResponse);
+//   rpc GetExamAssignments(GetExamAssignmentsRequest) returns (GetExamAssignmentsResponse);
+//   rpc GetStudentAnswers(GetStudentAnswersRequest) returns (GetStudentAnswersResponse);
+// }
+
 syntax = "proto3";
 
-package exams;
+package exam;
+option go_package = "/exam";
 
-option go_package = "/exams";
+// import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
 
-// ENUMS
-enum AssignmentStatus {
-  ASSIGNMENT_STATUS_UNSPECIFIED = 0;
-  ASSIGNED = 1;
-  IN_PROGRESS = 2;
-  SUBMITTED = 3;
-  GRADED = 4;
+// --- Exam service (teacher/admin) ---
+service ExamService {
+  // Create a new exam (timed or deadline)
+  rpc CreateExam(CreateExamRequest) returns (CreateExamResponse);
+
+  // Schedule an exam that was created with manual_start = false
+  rpc ScheduleExam(ScheduleExamRequest) returns (google.protobuf.Empty);
+
+  // Start a manual-start exam now
+  rpc StartExam(StartExamRequest) returns (StartExamResponse);
+
+  // End a running exam immediately
+  rpc EndExam(EndExamRequest) returns (EndExamResponse);
+
+  // Publish results after grading
+  rpc PublishResults(PublishResultsRequest) returns (PublishResultsResponse);
+
+  // Query live state (for students reconnect)
+  rpc GetExamLiveState(GetExamLiveStateRequest) returns (GetExamLiveStateResponse);
 }
 
-// MESSAGES
-message Exam {
-  string id = 1;
-  string title = 2;
-  string description = 3;
-  repeated string question_bank_ids = 4;
-  string start_time = 5;
-  string end_time = 6;
-  int32 duration_minutes = 7;
-  bool allow_late_submission = 8;
-  string created_by = 9;
-  string created_at = 10;
+// --- Student exam interactions ---
+service StudentExamService {
+  // Student joins an exam (opens WS or initial handshake)
+  rpc JoinExam(JoinExamRequest) returns (JoinExamResponse);
+
+  // Submit one answer (for live auto‐save)
+  rpc SubmitAnswer(SubmitAnswerRequest) returns (SubmitAnswerResponse);
+
+  // Submit entire exam (final submit)
+  rpc SubmitExam(SubmitExamRequest) returns (SubmitExamResponse);
+
+  // Get published result
+  rpc GetResult(GetResultRequest) returns (GetResultResponse);
+
+  // Stream real-time exam events (EXAM_STARTED, TIME_SYNC, EXAM_ENDED)
+  rpc StreamExamEvents(StreamExamEventsRequest) returns (stream ExamEvent);
 }
 
-message ExamAssignment {
-  string exam_id = 1;
-  string student_id = 2;
-  AssignmentStatus status = 3;
-  string submitted_at = 4;
-  string graded_at = 5;
+// --- Config types ---
+enum ExamType { 
+  TIMED = 0; 
+  DEADLINE = 1; 
 }
 
-message ExamQuestion {
-  string id = 1;
-  string exam_id = 2;
-  string question_id = 3; // from question_bank
+// --- Status enum ---
+enum ExamStatus { 
+  UNKNOWN = 0; 
+  SCHEDULED = 1; 
+  LIVE = 2; 
+  ENDED = 3; 
 }
 
-// Used in answer submission
-message StudentAnswer {
-  string id = 1;
-  string exam_id = 2;
-  string exam_question_id = 3;
-  string student_id = 4;
-  repeated string selected_option_ids = 5;
-  repeated string blank_answers = 6;
-  string text_answer = 7;
-  bool is_marked = 8;
-  bool is_correct = 9;
-  int32 score = 10;
-  string marked_at = 11;
+enum StartMode {
+  START_MODE_UNSPECIFIED = 0;
+  START_MODE_SCHEDULED = 1;
+  START_MODE_MANUAL = 2;
 }
 
-// REQUESTS / RESPONSES
+message Timed {
+  int32 duration = 1;
+  StartMode start_mode = 2;
+  string scheduled_start_date = 3;
+  string scheduled_start_time = 4;
+}
+
+message Deadline {
+  string start_date = 1;
+  string start_time = 2;
+  string end_date = 3;
+  string end_time = 4;
+  bool per_student_time_limit = 5;
+  int32 per_student_duration   = 6; // minutes
+}
+
+// --- Messages: Create and schedule exam ---
 message CreateExamRequest {
-  Exam exam = 1;
+  string user_id = 1;
+  string exam_id = 2;
+  string exam_key = 3; // unique exam key for the student to join the exam
+  string name       = 4;
+  string description = 5;
+  string subject    = 6;
+  ExamType exam_type = 7;
+
+  // common
+  repeated string question_bank_ids = 8;
+  bool randomize_questions = 9;
+  bool randomize_options   = 10;
+
+  oneof exam {
+    Timed    timed    = 11;
+    Deadline deadline = 12;
+  }
 }
 
 message CreateExamResponse {
-  string id = 1;
+  bool success = 1;
 }
 
-message AssignStudentsRequest {
+message ScheduleExamRequest {
   string exam_id = 1;
-  repeated string student_ids = 2;
+  string scheduled_start_date = 2;
+  string scheduled_start_time = 3;
+//   on the DB change the exam mode to scheduled
 }
 
-message SubmitAnswerRequest {
-  StudentAnswer answer = 1;
+// --- Messages: Start / End exam ---
+message StartExamRequest {
+  string exam_id = 1;
+  string user_id = 2;
 }
 
-message SubmitAnswerResponse {}
+message StartExamResponse {
+  string session_id = 1;
+  string started_at = 2;
+  string ends_at    = 3;
+}
 
-message GetExamAssignmentsRequest {
+message EndExamRequest {
+  string exam_id    = 1;
+  string session_id = 2;
+}
+
+message EndExamResponse {
+  string ended_at = 1;
+}
+
+// --- Messages: Live state & events ---
+message GetExamLiveStateRequest {
   string exam_id = 1;
 }
 
-message GetExamAssignmentsResponse {
-  repeated ExamAssignment assignments = 1;
+message GetExamLiveStateResponse {
+  ExamStatus status     = 1;
+  string started_at = 2;
+  string ends_at    = 3;
+  string server_time = 4;
 }
 
-message GetStudentAnswersRequest {
+message StreamExamEventsRequest {
   string exam_id = 1;
+}
+
+message ExamEvent {
+  enum EventType { EXAM_STARTED = 0; TIME_SYNC = 1; EXAM_ENDED = 2; }
+  EventType type = 1;
+  string timestamp = 2;
+  // for TIME_SYNC, payload.remaining_ms could be filled
+  int64 remaining_ms = 3;
+}
+
+// --- Messages: Student join & submission ---
+message JoinExamRequest {
+  string exam_id  = 1;
   string student_id = 2;
 }
 
-message GetStudentAnswersResponse {
-  repeated StudentAnswer answers = 1;
+message JoinExamResponse {
+  string session_id = 1;
+  ExamStatus status = 2;
+  string started_at = 3;
+  string ends_at    = 4;
+  string server_time = 5;
 }
 
-// SERVICE
-service ExamManagementService {
-  rpc CreateExam(CreateExamRequest) returns (CreateExamResponse);
-//   rpc AssignStudents(AssignStudentsRequest) returns (google.protobuf.Empty);
-  rpc SubmitAnswer(SubmitAnswerRequest) returns (SubmitAnswerResponse);
-  rpc GetExamAssignments(GetExamAssignmentsRequest) returns (GetExamAssignmentsResponse);
-  rpc GetStudentAnswers(GetStudentAnswersRequest) returns (GetStudentAnswersResponse);
+message SubmitAnswerRequest {
+  string session_id = 1;
+  string question_id = 2;
+  string student_id  = 3;
+  string answer      = 4; // could be JSON for complex types
+  string answered_at = 5;
 }
+
+message SubmitAnswerResponse {
+  bool accepted = 1;
+}
+
+message SubmitExamRequest {
+  string session_id = 1;
+  string student_id = 2;
+}
+
+message SubmitExamResponse {
+  bool accepted = 1;
+}
+
+// --- Messages: Results ---
+message PublishResultsRequest {
+  string exam_id = 1;
+  // optionally a list of student_ids to publish, or all
+  repeated string student_ids = 2;
+}
+
+message PublishResultsResponse {
+  int32 published_count = 1;
+}
+
+message GetResultRequest {
+  string exam_id    = 1;
+  string student_id = 2;
+}
+
+message GetResultResponse {
+  double score = 1;
+  repeated QuestionResult details = 2;
+}
+
+message QuestionResult {
+  string question_id = 1;
+  double score       = 2;
+  string feedback    = 3;
+}
+
+
+
+
