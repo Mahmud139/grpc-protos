@@ -100,8 +100,9 @@ message QuestionBank {
   string name = 2;
   string owner_id = 3; // The teacher who created this question bank
   int32 total_questions = 4;
-  string created_at = 5;
-  string updated_at = 6;
+  int32 total_marks = 5;
+  string created_at = 6;
+  string updated_at = 7;
 }
 
 message CreateQuestionBankRequest {
