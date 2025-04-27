@@ -107,16 +107,22 @@ syntax = "proto3";
 package exam;
 option go_package = "/exam";
 
-// import "google/protobuf/timestamp.proto";
-import "google/protobuf/empty.proto";
-
 // --- Exam service (teacher/admin) ---
 service ExamService {
   // Create a new exam (timed or deadline)
   rpc CreateExam(CreateExamRequest) returns (CreateExamResponse);
 
+  // Get all exams
+  rpc GetExams(GetExamsRequest) returns (GetExamsResponse);
+
+  // Update an exam
+  rpc UpdateExam(UpdateExamRequest) returns (UpdateExamResponse);
+
+  // Delete an exam
+  rpc DeleteExam(DeleteExamRequest) returns (DeleteExamResponse);
+
   // Schedule an exam that was created with manual_start = false
-  rpc ScheduleExam(ScheduleExamRequest) returns (google.protobuf.Empty);
+  rpc ScheduleExam(ScheduleExamRequest) returns (ScheduleExamResponse);
 
   // Start a manual-start exam now
   rpc StartExam(StartExamRequest) returns (StartExamResponse);
@@ -159,8 +165,10 @@ enum ExamType {
 enum ExamStatus { 
   UNKNOWN = 0; 
   SCHEDULED = 1; 
-  LIVE = 2; 
-  ENDED = 3; 
+  ACTIVE = 2; 
+  COMPLETED = 3; 
+  GRADED = 4;
+  PUBLISHED = 5;
 }
 
 enum StartMode {
@@ -172,50 +180,91 @@ enum StartMode {
 message Timed {
   int32 duration = 1;
   StartMode start_mode = 2;
-  string scheduled_start_date = 3;
-  string scheduled_start_time = 4;
+  string scheduled_start_date_time = 3;
 }
 
 message Deadline {
-  string start_date = 1;
-  string start_time = 2;
-  string end_date = 3;
-  string end_time = 4;
-  bool per_student_time_limit = 5;
-  int32 per_student_duration   = 6; // minutes
+  string start_date_time = 1;
+  string end_date_time = 2;
+  bool per_student_time_limit = 3;
+  int32 per_student_duration   = 4; // minutes
 }
 
-// --- Messages: Create and schedule exam ---
-message CreateExamRequest {
-  string user_id = 1;
+message Exam {
+  string created_by = 1;
   string exam_id = 2;
   string exam_key = 3; // unique exam key for the student to join the exam
   string name       = 4;
   string description = 5;
   string subject    = 6;
   ExamType exam_type = 7;
+  ExamStatus status = 8;
 
   // common
-  repeated string question_bank_ids = 8;
-  bool randomize_questions = 9;
-  bool randomize_options   = 10;
+  repeated string question_bank_ids = 9;
+  bool randomize_questions = 10;
+  bool randomize_options   = 11;
 
   oneof exam {
-    Timed    timed    = 11;
-    Deadline deadline = 12;
+    Timed    timed    = 12;
+    Deadline deadline = 13;
   }
+}
+
+// --- Messages: Create and schedule exam ---
+message CreateExamRequest {
+  Exam exam = 1;
 }
 
 message CreateExamResponse {
   bool success = 1;
 }
 
+message GetExamsRequest {
+  string created_by = 1;
+}
+
+message GetExamsResponse {
+  repeated Exam exams = 1;
+}
+
+message UpdateExamRequest {
+  Exam exam = 1;
+}
+
+message UpdateExamResponse {
+  bool success = 1;
+}
+
+message DeleteExamRequest {
+  string exam_id = 1;
+  string created_by = 2;
+}
+
+message DeleteExamResponse {
+  bool success = 1;
+}
+
 message ScheduleExamRequest {
   string exam_id = 1;
-  string scheduled_start_date = 2;
-  string scheduled_start_time = 3;
+  string scheduled_start_date_time = 2;
 //   on the DB change the exam mode to scheduled
 }
+
+message ScheduleExamResponse {
+  bool success = 1;
+}
+
+
+
+
+
+
+
+
+
+
+
 
 // --- Messages: Start / End exam ---
 message StartExamRequest {
