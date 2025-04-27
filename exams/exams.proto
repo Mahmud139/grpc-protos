@@ -186,22 +186,26 @@ message Exam {
   string subject    = 6;
   ExamType exam_type = 7;
   ExamStatus status = 8;
+  string created_at = 9;
+  string updated_at = 10;
+  int32 total_marks = 11;
+  int32 total_questions = 12;
 
   // common
-  repeated string question_bank_ids = 9;
-  bool randomize_questions = 10;
-  bool randomize_options   = 11;
+  repeated string question_bank_ids = 13;
+  bool randomize_questions = 14;
+  bool randomize_options   = 15;
 
   // timed
-  int32 duration = 12;
-  StartMode start_mode = 13;
-  string scheduled_start_date_time = 14;
+  int32 duration = 16;
+  StartMode start_mode = 17;
+  string scheduled_start_date_time = 18;
 
   // deadline
-  string start_date_time = 15;
-  string end_date_time = 16;
-  bool per_student_time_limit = 17;
-  int32 per_student_duration   = 18;
+  string start_date_time = 19;
+  string end_date_time = 20;
+  bool per_student_time_limit = 21;
+  int32 per_student_duration   = 22;
 }
 
 // --- Messages: Create and schedule exam ---
@@ -241,6 +245,7 @@ message DeleteExamResponse {
 message ScheduleExamRequest {
   string exam_id = 1;
   string scheduled_start_date_time = 2;
+  string created_by = 3;
 //   on the DB change the exam mode to scheduled
 }
 
