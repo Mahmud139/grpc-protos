@@ -104,8 +104,8 @@
 
 syntax = "proto3";
 
-package exam;
-option go_package = "/exam";
+package exams;
+option go_package = "/.";
 
 // --- Exam service (teacher/admin) ---
 service ExamService {
@@ -177,19 +177,6 @@ enum StartMode {
   START_MODE_MANUAL = 2;
 }
 
-message Timed {
-  int32 duration = 1;
-  StartMode start_mode = 2;
-  string scheduled_start_date_time = 3;
-}
-
-message Deadline {
-  string start_date_time = 1;
-  string end_date_time = 2;
-  bool per_student_time_limit = 3;
-  int32 per_student_duration   = 4; // minutes
-}
-
 message Exam {
   string created_by = 1;
   string exam_id = 2;
@@ -205,10 +192,16 @@ message Exam {
   bool randomize_questions = 10;
   bool randomize_options   = 11;
 
-  oneof exam {
-    Timed    timed    = 12;
-    Deadline deadline = 13;
-  }
+  // timed
+  int32 duration = 12;
+  StartMode start_mode = 13;
+  string scheduled_start_date_time = 14;
+
+  // deadline
+  string start_date_time = 15;
+  string end_date_time = 16;
+  bool per_student_time_limit = 17;
+  int32 per_student_duration   = 18;
 }
 
 // --- Messages: Create and schedule exam ---

@@ -108,7 +108,7 @@
 // - protoc             v5.27.1
 // source: exams.proto
 
-package exam
+package __
 
 import (
 	context "context"
@@ -123,15 +123,15 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ExamService_CreateExam_FullMethodName       = "/exam.ExamService/CreateExam"
-	ExamService_GetExams_FullMethodName         = "/exam.ExamService/GetExams"
-	ExamService_UpdateExam_FullMethodName       = "/exam.ExamService/UpdateExam"
-	ExamService_DeleteExam_FullMethodName       = "/exam.ExamService/DeleteExam"
-	ExamService_ScheduleExam_FullMethodName     = "/exam.ExamService/ScheduleExam"
-	ExamService_StartExam_FullMethodName        = "/exam.ExamService/StartExam"
-	ExamService_EndExam_FullMethodName          = "/exam.ExamService/EndExam"
-	ExamService_PublishResults_FullMethodName   = "/exam.ExamService/PublishResults"
-	ExamService_GetExamLiveState_FullMethodName = "/exam.ExamService/GetExamLiveState"
+	ExamService_CreateExam_FullMethodName       = "/exams.ExamService/CreateExam"
+	ExamService_GetExams_FullMethodName         = "/exams.ExamService/GetExams"
+	ExamService_UpdateExam_FullMethodName       = "/exams.ExamService/UpdateExam"
+	ExamService_DeleteExam_FullMethodName       = "/exams.ExamService/DeleteExam"
+	ExamService_ScheduleExam_FullMethodName     = "/exams.ExamService/ScheduleExam"
+	ExamService_StartExam_FullMethodName        = "/exams.ExamService/StartExam"
+	ExamService_EndExam_FullMethodName          = "/exams.ExamService/EndExam"
+	ExamService_PublishResults_FullMethodName   = "/exams.ExamService/PublishResults"
+	ExamService_GetExamLiveState_FullMethodName = "/exams.ExamService/GetExamLiveState"
 )
 
 // ExamServiceClient is the client API for ExamService service.
@@ -506,7 +506,7 @@ func _ExamService_GetExamLiveState_Handler(srv interface{}, ctx context.Context,
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var ExamService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "exam.ExamService",
+	ServiceName: "exams.ExamService",
 	HandlerType: (*ExamServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -551,11 +551,11 @@ var ExamService_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	StudentExamService_JoinExam_FullMethodName         = "/exam.StudentExamService/JoinExam"
-	StudentExamService_SubmitAnswer_FullMethodName     = "/exam.StudentExamService/SubmitAnswer"
-	StudentExamService_SubmitExam_FullMethodName       = "/exam.StudentExamService/SubmitExam"
-	StudentExamService_GetResult_FullMethodName        = "/exam.StudentExamService/GetResult"
-	StudentExamService_StreamExamEvents_FullMethodName = "/exam.StudentExamService/StreamExamEvents"
+	StudentExamService_JoinExam_FullMethodName         = "/exams.StudentExamService/JoinExam"
+	StudentExamService_SubmitAnswer_FullMethodName     = "/exams.StudentExamService/SubmitAnswer"
+	StudentExamService_SubmitExam_FullMethodName       = "/exams.StudentExamService/SubmitExam"
+	StudentExamService_GetResult_FullMethodName        = "/exams.StudentExamService/GetResult"
+	StudentExamService_StreamExamEvents_FullMethodName = "/exams.StudentExamService/StreamExamEvents"
 )
 
 // StudentExamServiceClient is the client API for StudentExamService service.
@@ -792,7 +792,7 @@ type StudentExamService_StreamExamEventsServer = grpc.ServerStreamingServer[Exam
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var StudentExamService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "exam.StudentExamService",
+	ServiceName: "exams.StudentExamService",
 	HandlerType: (*StudentExamServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
