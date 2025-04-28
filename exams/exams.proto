@@ -165,10 +165,11 @@ enum ExamType {
 enum ExamStatus { 
   UNKNOWN = 0; 
   SCHEDULED = 1; 
-  ACTIVE = 2; 
+  LIVE = 2; 
   COMPLETED = 3; 
   GRADED = 4;
   PUBLISHED = 5;
+  UNSCHEDULED = 6;
 }
 
 enum StartMode {
