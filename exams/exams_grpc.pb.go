@@ -125,6 +125,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	ExamService_CreateExam_FullMethodName       = "/exams.ExamService/CreateExam"
 	ExamService_GetExams_FullMethodName         = "/exams.ExamService/GetExams"
+	ExamService_GetExam_FullMethodName          = "/exams.ExamService/GetExam"
 	ExamService_UpdateExam_FullMethodName       = "/exams.ExamService/UpdateExam"
 	ExamService_DeleteExam_FullMethodName       = "/exams.ExamService/DeleteExam"
 	ExamService_ScheduleExam_FullMethodName     = "/exams.ExamService/ScheduleExam"
@@ -144,6 +145,8 @@ type ExamServiceClient interface {
 	CreateExam(ctx context.Context, in *CreateExamRequest, opts ...grpc.CallOption) (*CreateExamResponse, error)
 	// Get all exams
 	GetExams(ctx context.Context, in *GetExamsRequest, opts ...grpc.CallOption) (*GetExamsResponse, error)
+	// get an exam
+	GetExam(ctx context.Context, in *GetExamRequest, opts ...grpc.CallOption) (*GetExamResponse, error)
 	// Update an exam
 	UpdateExam(ctx context.Context, in *UpdateExamRequest, opts ...grpc.CallOption) (*UpdateExamResponse, error)
 	// Delete an exam
@@ -182,6 +185,16 @@ func (c *examServiceClient) GetExams(ctx context.Context, in *GetExamsRequest, o
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetExamsResponse)
 	err := c.cc.Invoke(ctx, ExamService_GetExams_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *examServiceClient) GetExam(ctx context.Context, in *GetExamRequest, opts ...grpc.CallOption) (*GetExamResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetExamResponse)
+	err := c.cc.Invoke(ctx, ExamService_GetExam_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -268,6 +281,8 @@ type ExamServiceServer interface {
 	CreateExam(context.Context, *CreateExamRequest) (*CreateExamResponse, error)
 	// Get all exams
 	GetExams(context.Context, *GetExamsRequest) (*GetExamsResponse, error)
+	// get an exam
+	GetExam(context.Context, *GetExamRequest) (*GetExamResponse, error)
 	// Update an exam
 	UpdateExam(context.Context, *UpdateExamRequest) (*UpdateExamResponse, error)
 	// Delete an exam
@@ -297,6 +312,9 @@ func (UnimplementedExamServiceServer) CreateExam(context.Context, *CreateExamReq
 }
 func (UnimplementedExamServiceServer) GetExams(context.Context, *GetExamsRequest) (*GetExamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetExams not implemented")
+}
+func (UnimplementedExamServiceServer) GetExam(context.Context, *GetExamRequest) (*GetExamResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetExam not implemented")
 }
 func (UnimplementedExamServiceServer) UpdateExam(context.Context, *UpdateExamRequest) (*UpdateExamResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateExam not implemented")
@@ -372,6 +390,24 @@ func _ExamService_GetExams_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ExamServiceServer).GetExams(ctx, req.(*GetExamsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ExamService_GetExam_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetExamRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ExamServiceServer).GetExam(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ExamService_GetExam_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ExamServiceServer).GetExam(ctx, req.(*GetExamRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -516,6 +552,10 @@ var ExamService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetExams",
 			Handler:    _ExamService_GetExams_Handler,
+		},
+		{
+			MethodName: "GetExam",
+			Handler:    _ExamService_GetExam_Handler,
 		},
 		{
 			MethodName: "UpdateExam",

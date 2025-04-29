@@ -115,6 +115,9 @@ service ExamService {
   // Get all exams
   rpc GetExams(GetExamsRequest) returns (GetExamsResponse);
 
+//   get an exam
+  rpc GetExam(GetExamRequest) returns (GetExamResponse);
+
   // Update an exam
   rpc UpdateExam(UpdateExamRequest) returns (UpdateExamResponse);
 
@@ -191,22 +194,24 @@ message Exam {
   string updated_at = 10;
   int32 total_marks = 11;
   int32 total_questions = 12;
+  string actual_start_date_time = 13;
+  string actual_end_date_time = 14;
 
   // common
-  repeated string question_bank_ids = 13;
-  bool randomize_questions = 14;
-  bool randomize_options   = 15;
+  repeated string question_bank_ids = 15;
+  bool randomize_questions = 16;
+  bool randomize_options   = 17;
 
   // timed
-  int32 duration = 16;
-  StartMode start_mode = 17;
-  string scheduled_start_date_time = 18;
+  int32 duration = 18;
+  StartMode start_mode = 19;
+  string scheduled_start_date_time = 20;
 
   // deadline
-  string start_date_time = 19;
-  string end_date_time = 20;
-  bool per_student_time_limit = 21;
-  int32 per_student_duration   = 22;
+  string start_date_time = 21;
+  string end_date_time = 22;
+  bool per_student_time_limit = 23;
+  int32 per_student_duration   = 24;
 }
 
 // --- Messages: Create and schedule exam ---
@@ -254,6 +259,14 @@ message ScheduleExamResponse {
   bool success = 1;
 }
 
+message GetExamRequest {
+  string exam_id = 1;
+  string created_by = 2;
+}
+
+message GetExamResponse {
+  Exam exam = 1;
+}
 
 
 

@@ -4,7 +4,7 @@
 // - protoc             v5.27.1
 // source: question_banks.proto
 
-package question_banks
+package __
 
 import (
 	context "context"
@@ -19,14 +19,15 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	QuestionBankService_CreateQuestionBank_FullMethodName     = "/questionbanks.QuestionBankService/CreateQuestionBank"
-	QuestionBankService_GetAllQuestionBanks_FullMethodName    = "/questionbanks.QuestionBankService/GetAllQuestionBanks"
-	QuestionBankService_DeleteQuestionBank_FullMethodName     = "/questionbanks.QuestionBankService/DeleteQuestionBank"
-	QuestionBankService_UpdateQuestionBankName_FullMethodName = "/questionbanks.QuestionBankService/UpdateQuestionBankName"
-	QuestionBankService_CreateQuestion_FullMethodName         = "/questionbanks.QuestionBankService/CreateQuestion"
-	QuestionBankService_GetQuestions_FullMethodName           = "/questionbanks.QuestionBankService/GetQuestions"
-	QuestionBankService_UpdateQuestion_FullMethodName         = "/questionbanks.QuestionBankService/UpdateQuestion"
-	QuestionBankService_DeleteQuestion_FullMethodName         = "/questionbanks.QuestionBankService/DeleteQuestion"
+	QuestionBankService_CreateQuestionBank_FullMethodName            = "/questionbanks.QuestionBankService/CreateQuestionBank"
+	QuestionBankService_GetAllQuestionBanks_FullMethodName           = "/questionbanks.QuestionBankService/GetAllQuestionBanks"
+	QuestionBankService_DeleteQuestionBank_FullMethodName            = "/questionbanks.QuestionBankService/DeleteQuestionBank"
+	QuestionBankService_UpdateQuestionBankName_FullMethodName        = "/questionbanks.QuestionBankService/UpdateQuestionBankName"
+	QuestionBankService_CreateQuestion_FullMethodName                = "/questionbanks.QuestionBankService/CreateQuestion"
+	QuestionBankService_GetQuestions_FullMethodName                  = "/questionbanks.QuestionBankService/GetQuestions"
+	QuestionBankService_GetQuestionsByQuestionBankIds_FullMethodName = "/questionbanks.QuestionBankService/GetQuestionsByQuestionBankIds"
+	QuestionBankService_UpdateQuestion_FullMethodName                = "/questionbanks.QuestionBankService/UpdateQuestion"
+	QuestionBankService_DeleteQuestion_FullMethodName                = "/questionbanks.QuestionBankService/DeleteQuestion"
 )
 
 // QuestionBankServiceClient is the client API for QuestionBankService service.
@@ -41,6 +42,7 @@ type QuestionBankServiceClient interface {
 	UpdateQuestionBankName(ctx context.Context, in *UpdateQuestionBankNameRequest, opts ...grpc.CallOption) (*UpdateQuestionBankNameResponse, error)
 	CreateQuestion(ctx context.Context, in *CreateQuestionRequest, opts ...grpc.CallOption) (*CreateQuestionResponse, error)
 	GetQuestions(ctx context.Context, in *GetQuestionsRequest, opts ...grpc.CallOption) (*GetQuestionsResponse, error)
+	GetQuestionsByQuestionBankIds(ctx context.Context, in *GetQuestionsByQuestionBankIdsRequest, opts ...grpc.CallOption) (*GetQuestionsByQuestionBankIdsResponse, error)
 	UpdateQuestion(ctx context.Context, in *UpdateQuestionRequest, opts ...grpc.CallOption) (*UpdateQuestionResponse, error)
 	DeleteQuestion(ctx context.Context, in *DeleteQuestionRequest, opts ...grpc.CallOption) (*DeleteQuestionResponse, error)
 }
@@ -113,6 +115,16 @@ func (c *questionBankServiceClient) GetQuestions(ctx context.Context, in *GetQue
 	return out, nil
 }
 
+func (c *questionBankServiceClient) GetQuestionsByQuestionBankIds(ctx context.Context, in *GetQuestionsByQuestionBankIdsRequest, opts ...grpc.CallOption) (*GetQuestionsByQuestionBankIdsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetQuestionsByQuestionBankIdsResponse)
+	err := c.cc.Invoke(ctx, QuestionBankService_GetQuestionsByQuestionBankIds_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *questionBankServiceClient) UpdateQuestion(ctx context.Context, in *UpdateQuestionRequest, opts ...grpc.CallOption) (*UpdateQuestionResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UpdateQuestionResponse)
@@ -145,6 +157,7 @@ type QuestionBankServiceServer interface {
 	UpdateQuestionBankName(context.Context, *UpdateQuestionBankNameRequest) (*UpdateQuestionBankNameResponse, error)
 	CreateQuestion(context.Context, *CreateQuestionRequest) (*CreateQuestionResponse, error)
 	GetQuestions(context.Context, *GetQuestionsRequest) (*GetQuestionsResponse, error)
+	GetQuestionsByQuestionBankIds(context.Context, *GetQuestionsByQuestionBankIdsRequest) (*GetQuestionsByQuestionBankIdsResponse, error)
 	UpdateQuestion(context.Context, *UpdateQuestionRequest) (*UpdateQuestionResponse, error)
 	DeleteQuestion(context.Context, *DeleteQuestionRequest) (*DeleteQuestionResponse, error)
 	mustEmbedUnimplementedQuestionBankServiceServer()
@@ -174,6 +187,9 @@ func (UnimplementedQuestionBankServiceServer) CreateQuestion(context.Context, *C
 }
 func (UnimplementedQuestionBankServiceServer) GetQuestions(context.Context, *GetQuestionsRequest) (*GetQuestionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetQuestions not implemented")
+}
+func (UnimplementedQuestionBankServiceServer) GetQuestionsByQuestionBankIds(context.Context, *GetQuestionsByQuestionBankIdsRequest) (*GetQuestionsByQuestionBankIdsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetQuestionsByQuestionBankIds not implemented")
 }
 func (UnimplementedQuestionBankServiceServer) UpdateQuestion(context.Context, *UpdateQuestionRequest) (*UpdateQuestionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateQuestion not implemented")
@@ -310,6 +326,24 @@ func _QuestionBankService_GetQuestions_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _QuestionBankService_GetQuestionsByQuestionBankIds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetQuestionsByQuestionBankIdsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QuestionBankServiceServer).GetQuestionsByQuestionBankIds(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: QuestionBankService_GetQuestionsByQuestionBankIds_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QuestionBankServiceServer).GetQuestionsByQuestionBankIds(ctx, req.(*GetQuestionsByQuestionBankIdsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _QuestionBankService_UpdateQuestion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateQuestionRequest)
 	if err := dec(in); err != nil {
@@ -376,6 +410,10 @@ var QuestionBankService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetQuestions",
 			Handler:    _QuestionBankService_GetQuestions_Handler,
+		},
+		{
+			MethodName: "GetQuestionsByQuestionBankIds",
+			Handler:    _QuestionBankService_GetQuestionsByQuestionBankIds_Handler,
 		},
 		{
 			MethodName: "UpdateQuestion",

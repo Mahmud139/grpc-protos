@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package questionbanks;
 
-option go_package = "/question_banks";
+option go_package = "/.";
 
 // ENUMS
 enum QuestionType {
@@ -143,6 +143,15 @@ message DeleteQuestionBankResponse {
   bool success = 1;
 }
 
+message GetQuestionsByQuestionBankIdsRequest {
+  repeated string question_bank_ids = 1;
+  string created_by = 2;
+}
+
+message GetQuestionsByQuestionBankIdsResponse {
+  repeated Question questions = 1;
+}
+
 
 // SERVICE
 service QuestionBankService {
@@ -153,6 +162,7 @@ service QuestionBankService {
 
   rpc CreateQuestion(CreateQuestionRequest) returns (CreateQuestionResponse);
   rpc GetQuestions(GetQuestionsRequest) returns (GetQuestionsResponse);
+  rpc GetQuestionsByQuestionBankIds(GetQuestionsByQuestionBankIdsRequest) returns (GetQuestionsByQuestionBankIdsResponse);
   rpc UpdateQuestion(UpdateQuestionRequest) returns (UpdateQuestionResponse);
   rpc DeleteQuestion(DeleteQuestionRequest) returns (DeleteQuestionResponse);
 }
