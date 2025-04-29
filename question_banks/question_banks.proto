@@ -53,6 +53,7 @@ message Question {
   string created_at = 14;
   string updated_at = 15;
   string created_by = 16; // The teacher's id who created the question
+  string question_bank_name = 17;
 }
 
 // REQUESTS / RESPONSES
