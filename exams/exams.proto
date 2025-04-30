@@ -115,6 +115,10 @@ service ExamService {
   // Get all exams
   rpc GetExams(GetExamsRequest) returns (GetExamsResponse);
 
+  rpc GetAllScheduledExams(GetAllScheduledExamsRequest) returns (GetAllScheduledExamsResponse);
+
+  rpc GetAllLiveExams(GetAllLiveExamsRequest) returns (GetAllLiveExamsResponse);
+
 //   get an exam
   rpc GetExam(GetExamRequest) returns (GetExamResponse);
 
@@ -128,7 +132,7 @@ service ExamService {
   rpc ScheduleExam(ScheduleExamRequest) returns (ScheduleExamResponse);
 
   // Start a manual-start exam now
-  rpc StartExam(StartExamRequest) returns (StartExamResponse);
+  rpc StartTimedExamManually(StartTimedExamManuallyRequest) returns (StartTimedExamManuallyResponse);
 
   // End a running exam immediately
   rpc EndExam(EndExamRequest) returns (EndExamResponse);
@@ -268,26 +272,33 @@ message GetExamResponse {
   Exam exam = 1;
 }
 
+message GetAllScheduledExamsRequest {
+  string created_by = 1;
+}
 
+message GetAllScheduledExamsResponse {
+  repeated Exam exams = 1;
+}
 
+message GetAllLiveExamsRequest {
+  string created_by = 1;
+}
 
-
-
-
+message GetAllLiveExamsResponse {
+  repeated Exam exams = 1;
+}
 
 
 
 
 // --- Messages: Start / End exam ---
-message StartExamRequest {
+message StartTimedExamManuallyRequest {
   string exam_id = 1;
-  string user_id = 2;
+  string created_by = 2;
 }
 
-message StartExamResponse {
-  string session_id = 1;
-  string started_at = 2;
-  string ends_at    = 3;
+message StartTimedExamManuallyResponse {
+  bool success = 1;
 }
 
 message EndExamRequest {

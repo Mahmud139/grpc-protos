@@ -123,16 +123,18 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ExamService_CreateExam_FullMethodName       = "/exams.ExamService/CreateExam"
-	ExamService_GetExams_FullMethodName         = "/exams.ExamService/GetExams"
-	ExamService_GetExam_FullMethodName          = "/exams.ExamService/GetExam"
-	ExamService_UpdateExam_FullMethodName       = "/exams.ExamService/UpdateExam"
-	ExamService_DeleteExam_FullMethodName       = "/exams.ExamService/DeleteExam"
-	ExamService_ScheduleExam_FullMethodName     = "/exams.ExamService/ScheduleExam"
-	ExamService_StartExam_FullMethodName        = "/exams.ExamService/StartExam"
-	ExamService_EndExam_FullMethodName          = "/exams.ExamService/EndExam"
-	ExamService_PublishResults_FullMethodName   = "/exams.ExamService/PublishResults"
-	ExamService_GetExamLiveState_FullMethodName = "/exams.ExamService/GetExamLiveState"
+	ExamService_CreateExam_FullMethodName             = "/exams.ExamService/CreateExam"
+	ExamService_GetExams_FullMethodName               = "/exams.ExamService/GetExams"
+	ExamService_GetAllScheduledExams_FullMethodName   = "/exams.ExamService/GetAllScheduledExams"
+	ExamService_GetAllLiveExams_FullMethodName        = "/exams.ExamService/GetAllLiveExams"
+	ExamService_GetExam_FullMethodName                = "/exams.ExamService/GetExam"
+	ExamService_UpdateExam_FullMethodName             = "/exams.ExamService/UpdateExam"
+	ExamService_DeleteExam_FullMethodName             = "/exams.ExamService/DeleteExam"
+	ExamService_ScheduleExam_FullMethodName           = "/exams.ExamService/ScheduleExam"
+	ExamService_StartTimedExamManually_FullMethodName = "/exams.ExamService/StartTimedExamManually"
+	ExamService_EndExam_FullMethodName                = "/exams.ExamService/EndExam"
+	ExamService_PublishResults_FullMethodName         = "/exams.ExamService/PublishResults"
+	ExamService_GetExamLiveState_FullMethodName       = "/exams.ExamService/GetExamLiveState"
 )
 
 // ExamServiceClient is the client API for ExamService service.
@@ -145,6 +147,8 @@ type ExamServiceClient interface {
 	CreateExam(ctx context.Context, in *CreateExamRequest, opts ...grpc.CallOption) (*CreateExamResponse, error)
 	// Get all exams
 	GetExams(ctx context.Context, in *GetExamsRequest, opts ...grpc.CallOption) (*GetExamsResponse, error)
+	GetAllScheduledExams(ctx context.Context, in *GetAllScheduledExamsRequest, opts ...grpc.CallOption) (*GetAllScheduledExamsResponse, error)
+	GetAllLiveExams(ctx context.Context, in *GetAllLiveExamsRequest, opts ...grpc.CallOption) (*GetAllLiveExamsResponse, error)
 	// get an exam
 	GetExam(ctx context.Context, in *GetExamRequest, opts ...grpc.CallOption) (*GetExamResponse, error)
 	// Update an exam
@@ -154,7 +158,7 @@ type ExamServiceClient interface {
 	// Schedule an exam that was created with manual_start = false
 	ScheduleExam(ctx context.Context, in *ScheduleExamRequest, opts ...grpc.CallOption) (*ScheduleExamResponse, error)
 	// Start a manual-start exam now
-	StartExam(ctx context.Context, in *StartExamRequest, opts ...grpc.CallOption) (*StartExamResponse, error)
+	StartTimedExamManually(ctx context.Context, in *StartTimedExamManuallyRequest, opts ...grpc.CallOption) (*StartTimedExamManuallyResponse, error)
 	// End a running exam immediately
 	EndExam(ctx context.Context, in *EndExamRequest, opts ...grpc.CallOption) (*EndExamResponse, error)
 	// Publish results after grading
@@ -185,6 +189,26 @@ func (c *examServiceClient) GetExams(ctx context.Context, in *GetExamsRequest, o
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetExamsResponse)
 	err := c.cc.Invoke(ctx, ExamService_GetExams_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *examServiceClient) GetAllScheduledExams(ctx context.Context, in *GetAllScheduledExamsRequest, opts ...grpc.CallOption) (*GetAllScheduledExamsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetAllScheduledExamsResponse)
+	err := c.cc.Invoke(ctx, ExamService_GetAllScheduledExams_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *examServiceClient) GetAllLiveExams(ctx context.Context, in *GetAllLiveExamsRequest, opts ...grpc.CallOption) (*GetAllLiveExamsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetAllLiveExamsResponse)
+	err := c.cc.Invoke(ctx, ExamService_GetAllLiveExams_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -231,10 +255,10 @@ func (c *examServiceClient) ScheduleExam(ctx context.Context, in *ScheduleExamRe
 	return out, nil
 }
 
-func (c *examServiceClient) StartExam(ctx context.Context, in *StartExamRequest, opts ...grpc.CallOption) (*StartExamResponse, error) {
+func (c *examServiceClient) StartTimedExamManually(ctx context.Context, in *StartTimedExamManuallyRequest, opts ...grpc.CallOption) (*StartTimedExamManuallyResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(StartExamResponse)
-	err := c.cc.Invoke(ctx, ExamService_StartExam_FullMethodName, in, out, cOpts...)
+	out := new(StartTimedExamManuallyResponse)
+	err := c.cc.Invoke(ctx, ExamService_StartTimedExamManually_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -281,6 +305,8 @@ type ExamServiceServer interface {
 	CreateExam(context.Context, *CreateExamRequest) (*CreateExamResponse, error)
 	// Get all exams
 	GetExams(context.Context, *GetExamsRequest) (*GetExamsResponse, error)
+	GetAllScheduledExams(context.Context, *GetAllScheduledExamsRequest) (*GetAllScheduledExamsResponse, error)
+	GetAllLiveExams(context.Context, *GetAllLiveExamsRequest) (*GetAllLiveExamsResponse, error)
 	// get an exam
 	GetExam(context.Context, *GetExamRequest) (*GetExamResponse, error)
 	// Update an exam
@@ -290,7 +316,7 @@ type ExamServiceServer interface {
 	// Schedule an exam that was created with manual_start = false
 	ScheduleExam(context.Context, *ScheduleExamRequest) (*ScheduleExamResponse, error)
 	// Start a manual-start exam now
-	StartExam(context.Context, *StartExamRequest) (*StartExamResponse, error)
+	StartTimedExamManually(context.Context, *StartTimedExamManuallyRequest) (*StartTimedExamManuallyResponse, error)
 	// End a running exam immediately
 	EndExam(context.Context, *EndExamRequest) (*EndExamResponse, error)
 	// Publish results after grading
@@ -313,6 +339,12 @@ func (UnimplementedExamServiceServer) CreateExam(context.Context, *CreateExamReq
 func (UnimplementedExamServiceServer) GetExams(context.Context, *GetExamsRequest) (*GetExamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetExams not implemented")
 }
+func (UnimplementedExamServiceServer) GetAllScheduledExams(context.Context, *GetAllScheduledExamsRequest) (*GetAllScheduledExamsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllScheduledExams not implemented")
+}
+func (UnimplementedExamServiceServer) GetAllLiveExams(context.Context, *GetAllLiveExamsRequest) (*GetAllLiveExamsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllLiveExams not implemented")
+}
 func (UnimplementedExamServiceServer) GetExam(context.Context, *GetExamRequest) (*GetExamResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetExam not implemented")
 }
@@ -325,8 +357,8 @@ func (UnimplementedExamServiceServer) DeleteExam(context.Context, *DeleteExamReq
 func (UnimplementedExamServiceServer) ScheduleExam(context.Context, *ScheduleExamRequest) (*ScheduleExamResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ScheduleExam not implemented")
 }
-func (UnimplementedExamServiceServer) StartExam(context.Context, *StartExamRequest) (*StartExamResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method StartExam not implemented")
+func (UnimplementedExamServiceServer) StartTimedExamManually(context.Context, *StartTimedExamManuallyRequest) (*StartTimedExamManuallyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StartTimedExamManually not implemented")
 }
 func (UnimplementedExamServiceServer) EndExam(context.Context, *EndExamRequest) (*EndExamResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EndExam not implemented")
@@ -390,6 +422,42 @@ func _ExamService_GetExams_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ExamServiceServer).GetExams(ctx, req.(*GetExamsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ExamService_GetAllScheduledExams_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllScheduledExamsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ExamServiceServer).GetAllScheduledExams(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ExamService_GetAllScheduledExams_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ExamServiceServer).GetAllScheduledExams(ctx, req.(*GetAllScheduledExamsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ExamService_GetAllLiveExams_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllLiveExamsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ExamServiceServer).GetAllLiveExams(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ExamService_GetAllLiveExams_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ExamServiceServer).GetAllLiveExams(ctx, req.(*GetAllLiveExamsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -466,20 +534,20 @@ func _ExamService_ScheduleExam_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ExamService_StartExam_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(StartExamRequest)
+func _ExamService_StartTimedExamManually_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StartTimedExamManuallyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ExamServiceServer).StartExam(ctx, in)
+		return srv.(ExamServiceServer).StartTimedExamManually(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: ExamService_StartExam_FullMethodName,
+		FullMethod: ExamService_StartTimedExamManually_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ExamServiceServer).StartExam(ctx, req.(*StartExamRequest))
+		return srv.(ExamServiceServer).StartTimedExamManually(ctx, req.(*StartTimedExamManuallyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -554,6 +622,14 @@ var ExamService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ExamService_GetExams_Handler,
 		},
 		{
+			MethodName: "GetAllScheduledExams",
+			Handler:    _ExamService_GetAllScheduledExams_Handler,
+		},
+		{
+			MethodName: "GetAllLiveExams",
+			Handler:    _ExamService_GetAllLiveExams_Handler,
+		},
+		{
 			MethodName: "GetExam",
 			Handler:    _ExamService_GetExam_Handler,
 		},
@@ -570,8 +646,8 @@ var ExamService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ExamService_ScheduleExam_Handler,
 		},
 		{
-			MethodName: "StartExam",
-			Handler:    _ExamService_StartExam_Handler,
+			MethodName: "StartTimedExamManually",
+			Handler:    _ExamService_StartTimedExamManually_Handler,
 		},
 		{
 			MethodName: "EndExam",
