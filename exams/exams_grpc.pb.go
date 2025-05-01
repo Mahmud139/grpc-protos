@@ -136,6 +136,7 @@ const (
 	ExamService_PublishResults_FullMethodName         = "/exams.ExamService/PublishResults"
 	ExamService_GetExamLiveState_FullMethodName       = "/exams.ExamService/GetExamLiveState"
 	ExamService_JoinExam_FullMethodName               = "/exams.ExamService/JoinExam"
+	ExamService_GetJoinedExams_FullMethodName         = "/exams.ExamService/GetJoinedExams"
 	ExamService_SubmitAnswer_FullMethodName           = "/exams.ExamService/SubmitAnswer"
 	ExamService_SubmitExam_FullMethodName             = "/exams.ExamService/SubmitExam"
 	ExamService_GetResult_FullMethodName              = "/exams.ExamService/GetResult"
@@ -172,6 +173,7 @@ type ExamServiceClient interface {
 	GetExamLiveState(ctx context.Context, in *GetExamLiveStateRequest, opts ...grpc.CallOption) (*GetExamLiveStateResponse, error)
 	// Student joins an exam (opens WS or initial handshake)
 	JoinExam(ctx context.Context, in *JoinExamRequest, opts ...grpc.CallOption) (*JoinExamResponse, error)
+	GetJoinedExams(ctx context.Context, in *GetJoinedExamsRequest, opts ...grpc.CallOption) (*GetJoinedExamsResponse, error)
 	// Submit one answer (for live auto‐save) take reference from comment
 	SubmitAnswer(ctx context.Context, in *SubmitAnswerRequest, opts ...grpc.CallOption) (*SubmitAnswerResponse, error)
 	// Submit entire exam (final submit)
@@ -320,6 +322,16 @@ func (c *examServiceClient) JoinExam(ctx context.Context, in *JoinExamRequest, o
 	return out, nil
 }
 
+func (c *examServiceClient) GetJoinedExams(ctx context.Context, in *GetJoinedExamsRequest, opts ...grpc.CallOption) (*GetJoinedExamsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetJoinedExamsResponse)
+	err := c.cc.Invoke(ctx, ExamService_GetJoinedExams_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *examServiceClient) SubmitAnswer(ctx context.Context, in *SubmitAnswerRequest, opts ...grpc.CallOption) (*SubmitAnswerResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(SubmitAnswerResponse)
@@ -399,6 +411,7 @@ type ExamServiceServer interface {
 	GetExamLiveState(context.Context, *GetExamLiveStateRequest) (*GetExamLiveStateResponse, error)
 	// Student joins an exam (opens WS or initial handshake)
 	JoinExam(context.Context, *JoinExamRequest) (*JoinExamResponse, error)
+	GetJoinedExams(context.Context, *GetJoinedExamsRequest) (*GetJoinedExamsResponse, error)
 	// Submit one answer (for live auto‐save) take reference from comment
 	SubmitAnswer(context.Context, *SubmitAnswerRequest) (*SubmitAnswerResponse, error)
 	// Submit entire exam (final submit)
@@ -455,6 +468,9 @@ func (UnimplementedExamServiceServer) GetExamLiveState(context.Context, *GetExam
 }
 func (UnimplementedExamServiceServer) JoinExam(context.Context, *JoinExamRequest) (*JoinExamResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method JoinExam not implemented")
+}
+func (UnimplementedExamServiceServer) GetJoinedExams(context.Context, *GetJoinedExamsRequest) (*GetJoinedExamsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetJoinedExams not implemented")
 }
 func (UnimplementedExamServiceServer) SubmitAnswer(context.Context, *SubmitAnswerRequest) (*SubmitAnswerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitAnswer not implemented")
@@ -723,6 +739,24 @@ func _ExamService_JoinExam_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ExamService_GetJoinedExams_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetJoinedExamsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ExamServiceServer).GetJoinedExams(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ExamService_GetJoinedExams_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ExamServiceServer).GetJoinedExams(ctx, req.(*GetJoinedExamsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ExamService_SubmitAnswer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SubmitAnswerRequest)
 	if err := dec(in); err != nil {
@@ -846,6 +880,10 @@ var ExamService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "JoinExam",
 			Handler:    _ExamService_JoinExam_Handler,
+		},
+		{
+			MethodName: "GetJoinedExams",
+			Handler:    _ExamService_GetJoinedExams_Handler,
 		},
 		{
 			MethodName: "SubmitAnswer",

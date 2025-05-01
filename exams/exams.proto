@@ -149,6 +149,8 @@ service ExamService {
   // Student joins an exam (opens WS or initial handshake)
   rpc JoinExam(JoinExamRequest) returns (JoinExamResponse);
 
+  rpc GetJoinedExams(GetJoinedExamsRequest) returns (GetJoinedExamsResponse);
+
   // Submit one answer (for live auto‐save) take reference from comment
   rpc SubmitAnswer(SubmitAnswerRequest) returns (SubmitAnswerResponse);
 
@@ -216,6 +218,7 @@ message Exam {
   string end_date_time = 22;
   bool per_student_time_limit = 23;
   int32 per_student_duration   = 24;
+  string teacher_name = 25;
 }
 
 // --- Messages: Create and schedule exam ---
@@ -352,6 +355,29 @@ message JoinExamResponse {
 //   string ends_at    = 4;
 //   string server_time = 5;
 }
+
+message GetJoinedExamsRequest {
+  string student_id = 1;
+}
+
+message GetJoinedExamsResponse {
+  repeated Exam exams = 1;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 message SubmitAnswerRequest {
   string session_id = 1;
