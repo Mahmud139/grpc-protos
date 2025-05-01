@@ -288,9 +288,6 @@ message GetAllLiveExamsResponse {
   repeated Exam exams = 1;
 }
 
-
-
-
 // --- Messages: Start / End exam ---
 message StartTimedExamManuallyRequest {
   string exam_id = 1;
@@ -334,18 +331,26 @@ message ExamEvent {
   int64 remaining_ms = 3;
 }
 
+
+
+
+
+
+
+
 // --- Messages: Student join & submission ---
 message JoinExamRequest {
-  string exam_id  = 1;
-  string student_id = 2;
+  string exam_key  = 1;
+  string student_id = 2; //user Id
 }
 
 message JoinExamResponse {
-  string session_id = 1;
-  ExamStatus status = 2;
-  string started_at = 3;
-  string ends_at    = 4;
-  string server_time = 5;
+    bool success = 1;
+//   string session_id = 1;
+//   ExamStatus status = 2;
+//   string started_at = 3;
+//   string ends_at    = 4;
+//   string server_time = 5;
 }
 
 message SubmitAnswerRequest {
