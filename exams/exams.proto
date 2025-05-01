@@ -149,7 +149,7 @@ service ExamService {
   // Student joins an exam (opens WS or initial handshake)
   rpc JoinExam(JoinExamRequest) returns (JoinExamResponse);
 
-  // Submit one answer (for live auto‐save)
+  // Submit one answer (for live auto‐save) take reference from comment
   rpc SubmitAnswer(SubmitAnswerRequest) returns (SubmitAnswerResponse);
 
   // Submit entire exam (final submit)
