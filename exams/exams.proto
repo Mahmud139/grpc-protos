@@ -134,6 +134,10 @@ service ExamService {
   // Start a manual-start exam now
   rpc StartTimedExamManually(StartTimedExamManuallyRequest) returns (StartTimedExamManuallyResponse);
 
+
+
+
+
   // End a running exam immediately
   rpc EndExam(EndExamRequest) returns (EndExamResponse);
 
@@ -150,6 +154,14 @@ service ExamService {
   rpc JoinExam(JoinExamRequest) returns (JoinExamResponse);
 
   rpc GetJoinedExams(GetJoinedExamsRequest) returns (GetJoinedExamsResponse);
+
+  rpc EnterLiveExam(EnterLiveExamRequest) returns (EnterLiveExamResponse);
+
+
+
+
+
+
 
   // Submit one answer (for live auto‐save) take reference from comment
   rpc SubmitAnswer(SubmitAnswerRequest) returns (SubmitAnswerResponse);
@@ -219,6 +231,46 @@ message Exam {
   bool per_student_time_limit = 23;
   int32 per_student_duration   = 24;
   string teacher_name = 25;
+}
+
+// ENUMS
+enum QuestionType {
+    QUESTION_TYPE_UNSPECIFIED = 0;
+    MCQ = 1;
+    TRUE_FALSE = 2;
+    CHECKBOX = 3;
+    FILL_IN_THE_BLANKS = 4;
+    SHORT_LONG_ANSWER = 5;
+}
+  
+// enum Difficulty {
+//     DIFFICULTY_UNSPECIFIED = 0;
+//     EASY = 1;
+//     MEDIUM = 2;
+//     HARD = 3;
+// }
+  // MESSAGES
+message QuestionOption {
+  string id = 1;
+  string question_id = 2;
+  string text = 3;
+}
+  
+message Blank {
+    string id = 1;
+    string question_id = 2;
+    int32 placeholder_order = 4;
+}
+  
+message StudentQuestion {
+    string id = 1;
+    QuestionType type = 2;
+    string question_content = 3;
+    repeated QuestionOption options = 4;
+    repeated Blank blanks = 5;
+    int32 score = 6;
+    string image_url = 7;
+    // Difficulty difficulty = 12;
 }
 
 // --- Messages: Create and schedule exam ---
@@ -363,6 +415,28 @@ message GetJoinedExamsRequest {
 message GetJoinedExamsResponse {
   repeated Exam exams = 1;
 }
+
+message EnterLiveExamRequest {
+  string exam_key = 1;
+  string student_id = 2;
+}
+
+message EnterLiveExamResponse {
+  string exam_name = 1;
+  string exam_subject = 2;
+  int32 total_marks = 3;
+  int32 duration_minutes = 4;
+  int32 time_remaining_seconds = 5;
+  string actual_start_date_time = 6;
+  string actual_end_date_time = 7;
+  repeated StudentQuestion questions = 8;
+  string start_date_time = 9;
+  string end_date_time = 10;
+}
+
+
+
+
 
 
 
