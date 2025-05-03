@@ -136,7 +136,7 @@ service ExamService {
 
 
 
-
+    // teacher part
 
   // End a running exam immediately
   rpc EndExam(EndExamRequest) returns (EndExamResponse);
@@ -157,17 +157,15 @@ service ExamService {
 
   rpc EnterLiveExam(EnterLiveExamRequest) returns (EnterLiveExamResponse);
 
-
-
-
-
-
-
   // Submit one answer (for live auto‐save) take reference from comment
   rpc SubmitAnswer(SubmitAnswerRequest) returns (SubmitAnswerResponse);
 
   // Submit entire exam (final submit)
   rpc SubmitExam(SubmitExamRequest) returns (SubmitExamResponse);
+
+
+
+
 
   // Get published result
   rpc GetResult(GetResultRequest) returns (GetResultResponse);
@@ -271,6 +269,8 @@ message StudentQuestion {
     int32 score = 6;
     string image_url = 7;
     // Difficulty difficulty = 12;
+    // bool has_word_limit = 8;
+    // int32 word_limit_count = 9;
 }
 
 // --- Messages: Create and schedule exam ---
@@ -435,44 +435,40 @@ message EnterLiveExamResponse {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+message StudentAnswer {
+  string question_id = 1;
+  QuestionType question_type = 2;
+  repeated string selected_option_ids = 3;
+  repeated string blank_answers = 4;
+  string answer_text = 5;
+  bool true_false_answer = 6;
+}
 
 message SubmitAnswerRequest {
-  string session_id = 1;
-  string question_id = 2;
-  string student_id  = 3;
-  string answer      = 4; // could be JSON for complex types
-  string answered_at = 5;
+  repeated StudentAnswer answers = 1;
+  string exam_id = 2;
+  string exam_key = 3;
+  string student_id = 4;
 }
 
 message SubmitAnswerResponse {
-  bool accepted = 1;
+  bool success = 1;
 }
 
 message SubmitExamRequest {
-  string session_id = 1;
-  string student_id = 2;
+  repeated StudentAnswer answers = 1;
+  string exam_id = 2;
+  string exam_key = 3;
+  string student_id = 4;
 }
 
 message SubmitExamResponse {
-  bool accepted = 1;
+  bool success = 1;
 }
+
+
+
+
 
 // --- Messages: Results ---
 message PublishResultsRequest {
