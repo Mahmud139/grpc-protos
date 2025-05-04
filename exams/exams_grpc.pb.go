@@ -132,6 +132,8 @@ const (
 	ExamService_DeleteExam_FullMethodName             = "/exams.ExamService/DeleteExam"
 	ExamService_ScheduleExam_FullMethodName           = "/exams.ExamService/ScheduleExam"
 	ExamService_StartTimedExamManually_FullMethodName = "/exams.ExamService/StartTimedExamManually"
+	ExamService_MonitorExam_FullMethodName            = "/exams.ExamService/MonitorExam"
+	ExamService_PingStudentInfo_FullMethodName        = "/exams.ExamService/PingStudentInfo"
 	ExamService_EndExam_FullMethodName                = "/exams.ExamService/EndExam"
 	ExamService_PublishResults_FullMethodName         = "/exams.ExamService/PublishResults"
 	ExamService_GetExamLiveState_FullMethodName       = "/exams.ExamService/GetExamLiveState"
@@ -167,6 +169,8 @@ type ExamServiceClient interface {
 	ScheduleExam(ctx context.Context, in *ScheduleExamRequest, opts ...grpc.CallOption) (*ScheduleExamResponse, error)
 	// Start a manual-start exam now
 	StartTimedExamManually(ctx context.Context, in *StartTimedExamManuallyRequest, opts ...grpc.CallOption) (*StartTimedExamManuallyResponse, error)
+	MonitorExam(ctx context.Context, in *MonitorExamRequest, opts ...grpc.CallOption) (*MonitorExamResponse, error)
+	PingStudentInfo(ctx context.Context, in *PingStudentInfoRequest, opts ...grpc.CallOption) (*PingStudentInfoResponse, error)
 	// End a running exam immediately
 	EndExam(ctx context.Context, in *EndExamRequest, opts ...grpc.CallOption) (*EndExamResponse, error)
 	// Publish results after grading
@@ -280,6 +284,26 @@ func (c *examServiceClient) StartTimedExamManually(ctx context.Context, in *Star
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(StartTimedExamManuallyResponse)
 	err := c.cc.Invoke(ctx, ExamService_StartTimedExamManually_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *examServiceClient) MonitorExam(ctx context.Context, in *MonitorExamRequest, opts ...grpc.CallOption) (*MonitorExamResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MonitorExamResponse)
+	err := c.cc.Invoke(ctx, ExamService_MonitorExam_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *examServiceClient) PingStudentInfo(ctx context.Context, in *PingStudentInfoRequest, opts ...grpc.CallOption) (*PingStudentInfoResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PingStudentInfoResponse)
+	err := c.cc.Invoke(ctx, ExamService_PingStudentInfo_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -427,6 +451,8 @@ type ExamServiceServer interface {
 	ScheduleExam(context.Context, *ScheduleExamRequest) (*ScheduleExamResponse, error)
 	// Start a manual-start exam now
 	StartTimedExamManually(context.Context, *StartTimedExamManuallyRequest) (*StartTimedExamManuallyResponse, error)
+	MonitorExam(context.Context, *MonitorExamRequest) (*MonitorExamResponse, error)
+	PingStudentInfo(context.Context, *PingStudentInfoRequest) (*PingStudentInfoResponse, error)
 	// End a running exam immediately
 	EndExam(context.Context, *EndExamRequest) (*EndExamResponse, error)
 	// Publish results after grading
@@ -482,6 +508,12 @@ func (UnimplementedExamServiceServer) ScheduleExam(context.Context, *ScheduleExa
 }
 func (UnimplementedExamServiceServer) StartTimedExamManually(context.Context, *StartTimedExamManuallyRequest) (*StartTimedExamManuallyResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StartTimedExamManually not implemented")
+}
+func (UnimplementedExamServiceServer) MonitorExam(context.Context, *MonitorExamRequest) (*MonitorExamResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MonitorExam not implemented")
+}
+func (UnimplementedExamServiceServer) PingStudentInfo(context.Context, *PingStudentInfoRequest) (*PingStudentInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PingStudentInfo not implemented")
 }
 func (UnimplementedExamServiceServer) EndExam(context.Context, *EndExamRequest) (*EndExamResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EndExam not implemented")
@@ -695,6 +727,42 @@ func _ExamService_StartTimedExamManually_Handler(srv interface{}, ctx context.Co
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ExamServiceServer).StartTimedExamManually(ctx, req.(*StartTimedExamManuallyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ExamService_MonitorExam_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MonitorExamRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ExamServiceServer).MonitorExam(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ExamService_MonitorExam_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ExamServiceServer).MonitorExam(ctx, req.(*MonitorExamRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ExamService_PingStudentInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PingStudentInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ExamServiceServer).PingStudentInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ExamService_PingStudentInfo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ExamServiceServer).PingStudentInfo(ctx, req.(*PingStudentInfoRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -932,6 +1000,14 @@ var ExamService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "StartTimedExamManually",
 			Handler:    _ExamService_StartTimedExamManually_Handler,
+		},
+		{
+			MethodName: "MonitorExam",
+			Handler:    _ExamService_MonitorExam_Handler,
+		},
+		{
+			MethodName: "PingStudentInfo",
+			Handler:    _ExamService_PingStudentInfo_Handler,
 		},
 		{
 			MethodName: "EndExam",
