@@ -148,7 +148,7 @@ service ExamService {
   rpc GetExamLiveState(GetExamLiveStateRequest) returns (GetExamLiveStateResponse);
 
 
-
+  rpc PingExam(PingExamRequest) returns (PingExamResponse);
 
   // Student joins an exam (opens WS or initial handshake)
   rpc JoinExam(JoinExamRequest) returns (JoinExamResponse);
@@ -389,7 +389,17 @@ message ExamEvent {
 
 
 
+message PingExamRequest {
+  string exam_id = 1;
+  string user_id = 2;
+  string exam_key = 3;
+}
 
+message PingExamResponse {
+  bool success = 1;
+  int32 remaining_server_time_in_seconds = 2;
+  bool is_exam_ended = 3;
+}
 
 
 
