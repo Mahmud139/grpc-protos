@@ -289,7 +289,8 @@ message ExamInfo {
   string start_date_time = 9;
   string end_date_time = 10;
   int32 duration = 11;
-  int32 total_student = 12;  
+  int32 total_student = 12;
+  int32 remaining_server_time_in_seconds = 13;
 }
 
 message StudentInfo {
@@ -301,8 +302,7 @@ message StudentInfo {
   string student_status = 6; // student_exam_participation.status -- active|inactive|submitted
   string student_join_time = 7; // student_exam_participation.first_entered_at
   string student_last_activity_time = 8; // student_exam_participation.last_activity_at
-  string completed_at = 9; // student_exam_participation.completed_at -- Submission Time
-//   int32 percentage_submitted = 11; 
+  string completed_at = 9; // student_exam_participation.completed_at -- Submission Time 
 }
 
 // --- Messages: Create and schedule exam ---
