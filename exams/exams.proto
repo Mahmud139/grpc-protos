@@ -387,11 +387,11 @@ message StartTimedExamManuallyResponse {
 
 message EndExamRequest {
   string exam_id    = 1;
-  string session_id = 2;
+  string user_id = 2;
 }
 
 message EndExamResponse {
-  string ended_at = 1;
+  bool success = 1;
 }
 
 // --- Messages: Live state & events ---
