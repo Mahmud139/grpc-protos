@@ -193,6 +193,8 @@ enum ExamStatus {
   GRADED = 4;
   PUBLISHED = 5;
   UNSCHEDULED = 6;
+  UNGRADED = 7;
+  UNPUBLISHED = 8;
 }
 
 enum StartMode {
