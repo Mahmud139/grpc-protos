@@ -532,6 +532,7 @@ message PingStudentInfoRequest {
 message PingStudentInfoResponse {
   repeated StudentInfo students = 1;
   bool is_students_joined = 2;
+  int32 remaining_server_time_in_seconds = 3;
 }
 
 
