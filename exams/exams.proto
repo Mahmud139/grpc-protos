@@ -221,7 +221,7 @@ message ExamAnalytics {
   int32 average_score = 8;
   int32 completion_rate = 9;
   int32 average_time = 10;
-  ExamType exam_type = 11;
+  string exam_type = 11;
 }
 
 message StudentAnalytics {
