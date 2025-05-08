@@ -19,29 +19,29 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ExamService_CreateExam_FullMethodName             = "/exams.ExamService/CreateExam"
-	ExamService_GetExams_FullMethodName               = "/exams.ExamService/GetExams"
-	ExamService_GetAllScheduledExams_FullMethodName   = "/exams.ExamService/GetAllScheduledExams"
-	ExamService_GetAllLiveExams_FullMethodName        = "/exams.ExamService/GetAllLiveExams"
-	ExamService_GetExam_FullMethodName                = "/exams.ExamService/GetExam"
-	ExamService_UpdateExam_FullMethodName             = "/exams.ExamService/UpdateExam"
-	ExamService_DeleteExam_FullMethodName             = "/exams.ExamService/DeleteExam"
-	ExamService_ScheduleExam_FullMethodName           = "/exams.ExamService/ScheduleExam"
-	ExamService_StartTimedExamManually_FullMethodName = "/exams.ExamService/StartTimedExamManually"
-	ExamService_MonitorExam_FullMethodName            = "/exams.ExamService/MonitorExam"
-	ExamService_PingStudentInfo_FullMethodName        = "/exams.ExamService/PingStudentInfo"
-	ExamService_EndExam_FullMethodName                = "/exams.ExamService/EndExam"
-	ExamService_ExamAnalytics_FullMethodName          = "/exams.ExamService/ExamAnalytics"
-	ExamService_PublishResults_FullMethodName         = "/exams.ExamService/PublishResults"
-	ExamService_GetExamLiveState_FullMethodName       = "/exams.ExamService/GetExamLiveState"
-	ExamService_PingExam_FullMethodName               = "/exams.ExamService/PingExam"
-	ExamService_JoinExam_FullMethodName               = "/exams.ExamService/JoinExam"
-	ExamService_GetJoinedExams_FullMethodName         = "/exams.ExamService/GetJoinedExams"
-	ExamService_EnterLiveExam_FullMethodName          = "/exams.ExamService/EnterLiveExam"
-	ExamService_SubmitAnswer_FullMethodName           = "/exams.ExamService/SubmitAnswer"
-	ExamService_SubmitExam_FullMethodName             = "/exams.ExamService/SubmitExam"
-	ExamService_GetResult_FullMethodName              = "/exams.ExamService/GetResult"
-	ExamService_StreamExamEvents_FullMethodName       = "/exams.ExamService/StreamExamEvents"
+	ExamService_CreateExam_FullMethodName                     = "/exams.ExamService/CreateExam"
+	ExamService_GetExams_FullMethodName                       = "/exams.ExamService/GetExams"
+	ExamService_GetAllScheduledExams_FullMethodName           = "/exams.ExamService/GetAllScheduledExams"
+	ExamService_GetAllLiveExams_FullMethodName                = "/exams.ExamService/GetAllLiveExams"
+	ExamService_GetExam_FullMethodName                        = "/exams.ExamService/GetExam"
+	ExamService_UpdateExam_FullMethodName                     = "/exams.ExamService/UpdateExam"
+	ExamService_DeleteExam_FullMethodName                     = "/exams.ExamService/DeleteExam"
+	ExamService_ScheduleExam_FullMethodName                   = "/exams.ExamService/ScheduleExam"
+	ExamService_StartTimedExamManually_FullMethodName         = "/exams.ExamService/StartTimedExamManually"
+	ExamService_MonitorExam_FullMethodName                    = "/exams.ExamService/MonitorExam"
+	ExamService_PingStudentInfo_FullMethodName                = "/exams.ExamService/PingStudentInfo"
+	ExamService_EndExam_FullMethodName                        = "/exams.ExamService/EndExam"
+	ExamService_ExamAnalytics_FullMethodName                  = "/exams.ExamService/ExamAnalytics"
+	ExamService_GetQuestionsWithStudentAnswers_FullMethodName = "/exams.ExamService/GetQuestionsWithStudentAnswers"
+	ExamService_PublishResults_FullMethodName                 = "/exams.ExamService/PublishResults"
+	ExamService_GetExamLiveState_FullMethodName               = "/exams.ExamService/GetExamLiveState"
+	ExamService_PingExam_FullMethodName                       = "/exams.ExamService/PingExam"
+	ExamService_JoinExam_FullMethodName                       = "/exams.ExamService/JoinExam"
+	ExamService_GetJoinedExams_FullMethodName                 = "/exams.ExamService/GetJoinedExams"
+	ExamService_EnterLiveExam_FullMethodName                  = "/exams.ExamService/EnterLiveExam"
+	ExamService_SubmitAnswer_FullMethodName                   = "/exams.ExamService/SubmitAnswer"
+	ExamService_SubmitExam_FullMethodName                     = "/exams.ExamService/SubmitExam"
+	ExamService_GetResult_FullMethodName                      = "/exams.ExamService/GetResult"
 )
 
 // ExamServiceClient is the client API for ExamService service.
@@ -71,6 +71,7 @@ type ExamServiceClient interface {
 	// End a running exam immediately
 	EndExam(ctx context.Context, in *EndExamRequest, opts ...grpc.CallOption) (*EndExamResponse, error)
 	ExamAnalytics(ctx context.Context, in *ExamAnalyticsRequest, opts ...grpc.CallOption) (*ExamAnalyticsResponse, error)
+	GetQuestionsWithStudentAnswers(ctx context.Context, in *GetQuestionsWithStudentAnswersRequest, opts ...grpc.CallOption) (*GetQuestionsWithStudentAnswersResponse, error)
 	// Publish results after grading
 	PublishResults(ctx context.Context, in *PublishResultsRequest, opts ...grpc.CallOption) (*PublishResultsResponse, error)
 	// Query live state (for students reconnect)
@@ -87,8 +88,6 @@ type ExamServiceClient interface {
 	// not implemented yet
 	// Get published result
 	GetResult(ctx context.Context, in *GetResultRequest, opts ...grpc.CallOption) (*GetResultResponse, error)
-	// Stream real-time exam events (EXAM_STARTED, TIME_SYNC, EXAM_ENDED)
-	StreamExamEvents(ctx context.Context, in *StreamExamEventsRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ExamEvent], error)
 }
 
 type examServiceClient struct {
@@ -229,6 +228,16 @@ func (c *examServiceClient) ExamAnalytics(ctx context.Context, in *ExamAnalytics
 	return out, nil
 }
 
+func (c *examServiceClient) GetQuestionsWithStudentAnswers(ctx context.Context, in *GetQuestionsWithStudentAnswersRequest, opts ...grpc.CallOption) (*GetQuestionsWithStudentAnswersResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetQuestionsWithStudentAnswersResponse)
+	err := c.cc.Invoke(ctx, ExamService_GetQuestionsWithStudentAnswers_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *examServiceClient) PublishResults(ctx context.Context, in *PublishResultsRequest, opts ...grpc.CallOption) (*PublishResultsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(PublishResultsResponse)
@@ -319,25 +328,6 @@ func (c *examServiceClient) GetResult(ctx context.Context, in *GetResultRequest,
 	return out, nil
 }
 
-func (c *examServiceClient) StreamExamEvents(ctx context.Context, in *StreamExamEventsRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ExamEvent], error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &ExamService_ServiceDesc.Streams[0], ExamService_StreamExamEvents_FullMethodName, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &grpc.GenericClientStream[StreamExamEventsRequest, ExamEvent]{ClientStream: stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type ExamService_StreamExamEventsClient = grpc.ServerStreamingClient[ExamEvent]
-
 // ExamServiceServer is the server API for ExamService service.
 // All implementations must embed UnimplementedExamServiceServer
 // for forward compatibility.
@@ -365,6 +355,7 @@ type ExamServiceServer interface {
 	// End a running exam immediately
 	EndExam(context.Context, *EndExamRequest) (*EndExamResponse, error)
 	ExamAnalytics(context.Context, *ExamAnalyticsRequest) (*ExamAnalyticsResponse, error)
+	GetQuestionsWithStudentAnswers(context.Context, *GetQuestionsWithStudentAnswersRequest) (*GetQuestionsWithStudentAnswersResponse, error)
 	// Publish results after grading
 	PublishResults(context.Context, *PublishResultsRequest) (*PublishResultsResponse, error)
 	// Query live state (for students reconnect)
@@ -381,8 +372,6 @@ type ExamServiceServer interface {
 	// not implemented yet
 	// Get published result
 	GetResult(context.Context, *GetResultRequest) (*GetResultResponse, error)
-	// Stream real-time exam events (EXAM_STARTED, TIME_SYNC, EXAM_ENDED)
-	StreamExamEvents(*StreamExamEventsRequest, grpc.ServerStreamingServer[ExamEvent]) error
 	mustEmbedUnimplementedExamServiceServer()
 }
 
@@ -432,6 +421,9 @@ func (UnimplementedExamServiceServer) EndExam(context.Context, *EndExamRequest) 
 func (UnimplementedExamServiceServer) ExamAnalytics(context.Context, *ExamAnalyticsRequest) (*ExamAnalyticsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExamAnalytics not implemented")
 }
+func (UnimplementedExamServiceServer) GetQuestionsWithStudentAnswers(context.Context, *GetQuestionsWithStudentAnswersRequest) (*GetQuestionsWithStudentAnswersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetQuestionsWithStudentAnswers not implemented")
+}
 func (UnimplementedExamServiceServer) PublishResults(context.Context, *PublishResultsRequest) (*PublishResultsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PublishResults not implemented")
 }
@@ -458,9 +450,6 @@ func (UnimplementedExamServiceServer) SubmitExam(context.Context, *SubmitExamReq
 }
 func (UnimplementedExamServiceServer) GetResult(context.Context, *GetResultRequest) (*GetResultResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetResult not implemented")
-}
-func (UnimplementedExamServiceServer) StreamExamEvents(*StreamExamEventsRequest, grpc.ServerStreamingServer[ExamEvent]) error {
-	return status.Errorf(codes.Unimplemented, "method StreamExamEvents not implemented")
 }
 func (UnimplementedExamServiceServer) mustEmbedUnimplementedExamServiceServer() {}
 func (UnimplementedExamServiceServer) testEmbeddedByValue()                     {}
@@ -717,6 +706,24 @@ func _ExamService_ExamAnalytics_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ExamService_GetQuestionsWithStudentAnswers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetQuestionsWithStudentAnswersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ExamServiceServer).GetQuestionsWithStudentAnswers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ExamService_GetQuestionsWithStudentAnswers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ExamServiceServer).GetQuestionsWithStudentAnswers(ctx, req.(*GetQuestionsWithStudentAnswersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ExamService_PublishResults_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PublishResultsRequest)
 	if err := dec(in); err != nil {
@@ -879,17 +886,6 @@ func _ExamService_GetResult_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ExamService_StreamExamEvents_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(StreamExamEventsRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(ExamServiceServer).StreamExamEvents(m, &grpc.GenericServerStream[StreamExamEventsRequest, ExamEvent]{ServerStream: stream})
-}
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type ExamService_StreamExamEventsServer = grpc.ServerStreamingServer[ExamEvent]
-
 // ExamService_ServiceDesc is the grpc.ServiceDesc for ExamService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -950,6 +946,10 @@ var ExamService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ExamService_ExamAnalytics_Handler,
 		},
 		{
+			MethodName: "GetQuestionsWithStudentAnswers",
+			Handler:    _ExamService_GetQuestionsWithStudentAnswers_Handler,
+		},
+		{
 			MethodName: "PublishResults",
 			Handler:    _ExamService_PublishResults_Handler,
 		},
@@ -986,12 +986,6 @@ var ExamService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ExamService_GetResult_Handler,
 		},
 	},
-	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "StreamExamEvents",
-			Handler:       _ExamService_StreamExamEvents_Handler,
-			ServerStreams: true,
-		},
-	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "exams.proto",
 }

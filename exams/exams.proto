@@ -39,6 +39,9 @@ service ExamService {
 
   rpc ExamAnalytics(ExamAnalyticsRequest) returns (ExamAnalyticsResponse);
 
+//   rpc GetExamQuestions(GetExamQuestionsRequest) returns (GetExamQuestionsResponse);
+
+  rpc GetQuestionsWithStudentAnswers(GetQuestionsWithStudentAnswersRequest) returns (GetQuestionsWithStudentAnswersResponse);
 
 //   not implemented yet
 
@@ -75,10 +78,72 @@ service ExamService {
     // not implemented yet
   // Get published result
   rpc GetResult(GetResultRequest) returns (GetResultResponse);
-
-  // Stream real-time exam events (EXAM_STARTED, TIME_SYNC, EXAM_ENDED)
-  rpc StreamExamEvents(StreamExamEventsRequest) returns (stream ExamEvent);
 }
+
+message QuestionWithAnswer {
+    string id = 1;
+    string type = 2;        // "mcq", "checkbox", "true-false", "short-long", "fill-blanks"
+    string text = 3;
+    int32 score = 4;
+    string difficulty = 5;  // "easy", "medium", "hard"
+  
+    repeated OptionItem options = 6; // For MCQ/Checkbox
+    repeated BlankItem blanks = 7;   // For Fill-blanks
+  
+    // Correct answers (one or more populated based on type)
+    bool tf_answer = 8;
+    string short_long_answer = 9;
+    repeated string mcq_checkbox_answers = 10;
+  
+    // Student answers (one or more populated based on type)
+    bool tf_student_answer = 11;
+    string short_long_student_answer = 12;
+    repeated string mcq_checkbox_student_answer = 13;
+}
+  
+
+message OptionItem {
+  string id = 1;
+  string text = 2;
+}
+
+message BlankItem {
+  string id = 1;
+  string correct_answer = 2;
+  string student_answer = 3;
+}
+
+message ExamMetadata {
+  string exam_id = 1;
+  string exam_name = 2;
+  string exam_subject = 3;
+  int32 total_marks = 4;
+  int32 total_questions = 5;
+}
+
+message StudentMetadata {
+  string student_id = 1;
+  string student_name = 2;
+  string student_email = 3;
+  string student_roll_no = 4;
+  string student_grade = 5;
+  string submitted_at = 6;
+  int32 time_spent_minutes = 7;
+}
+
+message GetQuestionsWithStudentAnswersResponse {
+  repeated QuestionWithAnswer questions_with_answers = 1;
+  ExamMetadata exam_metadata = 2;
+  StudentMetadata student_metadata = 3;
+}
+
+message GetQuestionsWithStudentAnswersRequest {
+  string student_uid = 1;
+  string exam_id = 2;
+  string teacher_uid = 3;
+}
+
+
 
 // --- Config types ---
 enum ExamType { 
