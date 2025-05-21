@@ -43,6 +43,10 @@ service ExamService {
 
   rpc GetQuestionsWithStudentAnswers(GetQuestionsWithStudentAnswersRequest) returns (GetQuestionsWithStudentAnswersResponse);
 
+  rpc SaveStudentScore(SaveStudentScoreRequest) returns (SaveStudentScoreResponse);
+
+  rpc SaveStudentFeedback(SaveStudentFeedbackRequest) returns (SaveStudentFeedbackResponse);
+
 //   not implemented yet
 
   // Publish results after grading
@@ -81,24 +85,24 @@ service ExamService {
 }
 
 message QuestionWithAnswer {
-    string id = 1;
-    string type = 2;        // "mcq", "checkbox", "true-false", "short-long", "fill-blanks"
-    string text = 3;
-    int32 score = 4;
-    string difficulty = 5;  // "easy", "medium", "hard"
+  string id = 1;
+  string type = 2;        // "mcq", "checkbox", "true-false", "short-long", "fill-blanks"
+  string text = 3;
+  int32 score = 4;
+  string difficulty = 5;  // "easy", "medium", "hard"
   
-    repeated OptionItem options = 6; // For MCQ/Checkbox
-    repeated BlankItem blanks = 7;   // For Fill-blanks
+  repeated OptionItem options = 6; // For MCQ/Checkbox
+  repeated BlankItem blanks = 7;   // For Fill-blanks
   
-    // Correct answers (one or more populated based on type)
-    bool tf_answer = 8;
-    string short_long_answer = 9;
-    repeated string mcq_checkbox_answers = 10;
+  // Correct answers (one or more populated based on type)
+  bool tf_answer = 8;
+  string short_long_answer = 9;
+  repeated string mcq_checkbox_answers = 10;
   
-    // Student answers (one or more populated based on type)
-    bool tf_student_answer = 11;
-    string short_long_student_answer = 12;
-    repeated string mcq_checkbox_student_answer = 13;
+  // Student answers (one or more populated based on type)
+  bool tf_student_answer = 11;
+  string short_long_student_answer = 12;
+  repeated string mcq_checkbox_student_answer = 13;
 }
   
 
@@ -141,6 +145,30 @@ message GetQuestionsWithStudentAnswersRequest {
   string student_uid = 1;
   string exam_id = 2;
   string teacher_uid = 3;
+}
+
+message SaveStudentScoreRequest {
+  string student_uid = 1;
+  string exam_id = 2;
+  string teacher_uid = 3;
+  string question_id = 4;
+  int32 score = 5;
+}
+
+message SaveStudentScoreResponse {
+  bool success = 1;
+}
+
+message SaveStudentFeedbackRequest {
+  string student_uid = 1;
+  string exam_id = 2;
+  string teacher_uid = 3;
+  string question_id = 4;
+  string feedback = 5;
+}
+
+message SaveStudentFeedbackResponse {
+  bool success = 1;
 }
 
 
