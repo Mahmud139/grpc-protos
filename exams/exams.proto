@@ -103,6 +103,7 @@ message QuestionWithAnswer {
   bool tf_student_answer = 11;
   string short_long_student_answer = 12;
   repeated string mcq_checkbox_student_answer = 13;
+  int32 given_score = 14;
 }
   
 
