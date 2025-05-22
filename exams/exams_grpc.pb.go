@@ -35,6 +35,7 @@ const (
 	ExamService_GetQuestionsWithStudentAnswers_FullMethodName = "/exams.ExamService/GetQuestionsWithStudentAnswers"
 	ExamService_SaveStudentScore_FullMethodName               = "/exams.ExamService/SaveStudentScore"
 	ExamService_SaveStudentFeedback_FullMethodName            = "/exams.ExamService/SaveStudentFeedback"
+	ExamService_SubmitGrading_FullMethodName                  = "/exams.ExamService/SubmitGrading"
 	ExamService_PublishResults_FullMethodName                 = "/exams.ExamService/PublishResults"
 	ExamService_GetExamLiveState_FullMethodName               = "/exams.ExamService/GetExamLiveState"
 	ExamService_PingExam_FullMethodName                       = "/exams.ExamService/PingExam"
@@ -76,6 +77,7 @@ type ExamServiceClient interface {
 	GetQuestionsWithStudentAnswers(ctx context.Context, in *GetQuestionsWithStudentAnswersRequest, opts ...grpc.CallOption) (*GetQuestionsWithStudentAnswersResponse, error)
 	SaveStudentScore(ctx context.Context, in *SaveStudentScoreRequest, opts ...grpc.CallOption) (*SaveStudentScoreResponse, error)
 	SaveStudentFeedback(ctx context.Context, in *SaveStudentFeedbackRequest, opts ...grpc.CallOption) (*SaveStudentFeedbackResponse, error)
+	SubmitGrading(ctx context.Context, in *SubmitGradingRequest, opts ...grpc.CallOption) (*SubmitGradingResponse, error)
 	// Publish results after grading
 	PublishResults(ctx context.Context, in *PublishResultsRequest, opts ...grpc.CallOption) (*PublishResultsResponse, error)
 	// Query live state (for students reconnect)
@@ -262,6 +264,16 @@ func (c *examServiceClient) SaveStudentFeedback(ctx context.Context, in *SaveStu
 	return out, nil
 }
 
+func (c *examServiceClient) SubmitGrading(ctx context.Context, in *SubmitGradingRequest, opts ...grpc.CallOption) (*SubmitGradingResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SubmitGradingResponse)
+	err := c.cc.Invoke(ctx, ExamService_SubmitGrading_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *examServiceClient) PublishResults(ctx context.Context, in *PublishResultsRequest, opts ...grpc.CallOption) (*PublishResultsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(PublishResultsResponse)
@@ -382,6 +394,7 @@ type ExamServiceServer interface {
 	GetQuestionsWithStudentAnswers(context.Context, *GetQuestionsWithStudentAnswersRequest) (*GetQuestionsWithStudentAnswersResponse, error)
 	SaveStudentScore(context.Context, *SaveStudentScoreRequest) (*SaveStudentScoreResponse, error)
 	SaveStudentFeedback(context.Context, *SaveStudentFeedbackRequest) (*SaveStudentFeedbackResponse, error)
+	SubmitGrading(context.Context, *SubmitGradingRequest) (*SubmitGradingResponse, error)
 	// Publish results after grading
 	PublishResults(context.Context, *PublishResultsRequest) (*PublishResultsResponse, error)
 	// Query live state (for students reconnect)
@@ -455,6 +468,9 @@ func (UnimplementedExamServiceServer) SaveStudentScore(context.Context, *SaveStu
 }
 func (UnimplementedExamServiceServer) SaveStudentFeedback(context.Context, *SaveStudentFeedbackRequest) (*SaveStudentFeedbackResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveStudentFeedback not implemented")
+}
+func (UnimplementedExamServiceServer) SubmitGrading(context.Context, *SubmitGradingRequest) (*SubmitGradingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SubmitGrading not implemented")
 }
 func (UnimplementedExamServiceServer) PublishResults(context.Context, *PublishResultsRequest) (*PublishResultsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PublishResults not implemented")
@@ -792,6 +808,24 @@ func _ExamService_SaveStudentFeedback_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ExamService_SubmitGrading_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SubmitGradingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ExamServiceServer).SubmitGrading(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ExamService_SubmitGrading_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ExamServiceServer).SubmitGrading(ctx, req.(*SubmitGradingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ExamService_PublishResults_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PublishResultsRequest)
 	if err := dec(in); err != nil {
@@ -1024,6 +1058,10 @@ var ExamService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SaveStudentFeedback",
 			Handler:    _ExamService_SaveStudentFeedback_Handler,
+		},
+		{
+			MethodName: "SubmitGrading",
+			Handler:    _ExamService_SubmitGrading_Handler,
 		},
 		{
 			MethodName: "PublishResults",

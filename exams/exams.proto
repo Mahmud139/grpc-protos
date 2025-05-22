@@ -47,6 +47,8 @@ service ExamService {
 
   rpc SaveStudentFeedback(SaveStudentFeedbackRequest) returns (SaveStudentFeedbackResponse);
 
+  rpc SubmitGrading(SubmitGradingRequest) returns (SubmitGradingResponse);
+
 //   not implemented yet
 
   // Publish results after grading
@@ -82,6 +84,16 @@ service ExamService {
     // not implemented yet
   // Get published result
   rpc GetResult(GetResultRequest) returns (GetResultResponse);
+}
+
+message SubmitGradingRequest {
+  string student_uid = 1;
+  string exam_id = 2;
+  string teacher_uid = 3;
+}
+
+message SubmitGradingResponse {
+  bool success = 1;
 }
 
 message QuestionWithAnswer {
