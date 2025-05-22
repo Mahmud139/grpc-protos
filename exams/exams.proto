@@ -49,19 +49,8 @@ service ExamService {
 
   rpc SubmitGrading(SubmitGradingRequest) returns (SubmitGradingResponse);
 
-//   not implemented yet
-
   // Publish results after grading
   rpc PublishResults(PublishResultsRequest) returns (PublishResultsResponse);
-
-  // Query live state (for students reconnect)
-  rpc GetExamLiveState(GetExamLiveStateRequest) returns (GetExamLiveStateResponse);
-
-
-
-
-
-
 
   rpc PingExam(PingExamRequest) returns (PingExamResponse);
 
@@ -77,9 +66,7 @@ service ExamService {
 
   // Submit entire exam (final submit)
   rpc SubmitExam(SubmitExamRequest) returns (SubmitExamResponse);
-
-
-
+  
 
     // not implemented yet
   // Get published result
@@ -430,30 +417,6 @@ message EndExamResponse {
   bool success = 1;
 }
 
-// --- Messages: Live state & events ---
-message GetExamLiveStateRequest {
-  string exam_id = 1;
-}
-
-message GetExamLiveStateResponse {
-  ExamStatus status     = 1;
-  string started_at = 2;
-  string ends_at    = 3;
-  string server_time = 4;
-}
-
-message StreamExamEventsRequest {
-  string exam_id = 1;
-}
-
-message ExamEvent {
-  enum EventType { EXAM_STARTED = 0; TIME_SYNC = 1; EXAM_ENDED = 2; }
-  EventType type = 1;
-  string timestamp = 2;
-  // for TIME_SYNC, payload.remaining_ms could be filled
-  int64 remaining_ms = 3;
-}
-
 
 
 
@@ -586,12 +549,13 @@ message ExamAnalyticsResponse {
 // --- Messages: Results ---
 message PublishResultsRequest {
   string exam_id = 1;
+  string created_by = 2;
   // optionally a list of student_ids to publish, or all
-  repeated string student_ids = 2;
+//   repeated string student_ids = 3;
 }
 
 message PublishResultsResponse {
-  int32 published_count = 1;
+  bool success = 1;
 }
 
 message GetResultRequest {

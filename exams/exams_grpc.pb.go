@@ -37,7 +37,6 @@ const (
 	ExamService_SaveStudentFeedback_FullMethodName            = "/exams.ExamService/SaveStudentFeedback"
 	ExamService_SubmitGrading_FullMethodName                  = "/exams.ExamService/SubmitGrading"
 	ExamService_PublishResults_FullMethodName                 = "/exams.ExamService/PublishResults"
-	ExamService_GetExamLiveState_FullMethodName               = "/exams.ExamService/GetExamLiveState"
 	ExamService_PingExam_FullMethodName                       = "/exams.ExamService/PingExam"
 	ExamService_JoinExam_FullMethodName                       = "/exams.ExamService/JoinExam"
 	ExamService_GetJoinedExams_FullMethodName                 = "/exams.ExamService/GetJoinedExams"
@@ -80,8 +79,6 @@ type ExamServiceClient interface {
 	SubmitGrading(ctx context.Context, in *SubmitGradingRequest, opts ...grpc.CallOption) (*SubmitGradingResponse, error)
 	// Publish results after grading
 	PublishResults(ctx context.Context, in *PublishResultsRequest, opts ...grpc.CallOption) (*PublishResultsResponse, error)
-	// Query live state (for students reconnect)
-	GetExamLiveState(ctx context.Context, in *GetExamLiveStateRequest, opts ...grpc.CallOption) (*GetExamLiveStateResponse, error)
 	PingExam(ctx context.Context, in *PingExamRequest, opts ...grpc.CallOption) (*PingExamResponse, error)
 	// Student joins an exam (opens WS or initial handshake)
 	JoinExam(ctx context.Context, in *JoinExamRequest, opts ...grpc.CallOption) (*JoinExamResponse, error)
@@ -284,16 +281,6 @@ func (c *examServiceClient) PublishResults(ctx context.Context, in *PublishResul
 	return out, nil
 }
 
-func (c *examServiceClient) GetExamLiveState(ctx context.Context, in *GetExamLiveStateRequest, opts ...grpc.CallOption) (*GetExamLiveStateResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetExamLiveStateResponse)
-	err := c.cc.Invoke(ctx, ExamService_GetExamLiveState_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *examServiceClient) PingExam(ctx context.Context, in *PingExamRequest, opts ...grpc.CallOption) (*PingExamResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(PingExamResponse)
@@ -397,8 +384,6 @@ type ExamServiceServer interface {
 	SubmitGrading(context.Context, *SubmitGradingRequest) (*SubmitGradingResponse, error)
 	// Publish results after grading
 	PublishResults(context.Context, *PublishResultsRequest) (*PublishResultsResponse, error)
-	// Query live state (for students reconnect)
-	GetExamLiveState(context.Context, *GetExamLiveStateRequest) (*GetExamLiveStateResponse, error)
 	PingExam(context.Context, *PingExamRequest) (*PingExamResponse, error)
 	// Student joins an exam (opens WS or initial handshake)
 	JoinExam(context.Context, *JoinExamRequest) (*JoinExamResponse, error)
@@ -474,9 +459,6 @@ func (UnimplementedExamServiceServer) SubmitGrading(context.Context, *SubmitGrad
 }
 func (UnimplementedExamServiceServer) PublishResults(context.Context, *PublishResultsRequest) (*PublishResultsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PublishResults not implemented")
-}
-func (UnimplementedExamServiceServer) GetExamLiveState(context.Context, *GetExamLiveStateRequest) (*GetExamLiveStateResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetExamLiveState not implemented")
 }
 func (UnimplementedExamServiceServer) PingExam(context.Context, *PingExamRequest) (*PingExamResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PingExam not implemented")
@@ -844,24 +826,6 @@ func _ExamService_PublishResults_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ExamService_GetExamLiveState_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetExamLiveStateRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ExamServiceServer).GetExamLiveState(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ExamService_GetExamLiveState_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ExamServiceServer).GetExamLiveState(ctx, req.(*GetExamLiveStateRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _ExamService_PingExam_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PingExamRequest)
 	if err := dec(in); err != nil {
@@ -1066,10 +1030,6 @@ var ExamService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PublishResults",
 			Handler:    _ExamService_PublishResults_Handler,
-		},
-		{
-			MethodName: "GetExamLiveState",
-			Handler:    _ExamService_GetExamLiveState_Handler,
 		},
 		{
 			MethodName: "PingExam",
